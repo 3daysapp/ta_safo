@@ -1,0 +1,37 @@
+name: ta_safo
+description: A new application.
+
+version: 0.0.1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+  # https://fontawesome.com/icons?d=gallery&m=free
+  font_awesome_flutter: ^8.5.0
+  # https://pub.dev/packages/dio
+  http: ^0.12.0+2
+  shared_preferences: 0.5.3+3
+  package_info: ^0.4.0+3
+  path_provider: ^1.1.2
+  device_info: ^0.4.0+2
+  cached_network_image: ^1.1.0
+  url_launcher: ^5.0.5
+  # https://pub.dev/packages/image_picker
+  # https://pub.dev/packages/provider
+  # https://pub.dev/packages/google_maps_flutter
+  # https://pub.dev/packages/firebase_crashlytics
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  test: ^1.5.1
+
+flutter:
+  uses-material-design: true
