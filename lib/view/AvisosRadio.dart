@@ -5,7 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
-enum SarNavarea { sar, navarea }
+///
+///
+///
+enum TipoAviso {
+  todos,
+  sar,
+  navarea,
+  norte,
+  leste,
+  sul,
+  bacia_amazonica,
+  hidrovias_geral,
+}
 
 ///
 ///
@@ -21,16 +33,22 @@ class AvisosRadio extends StatefulWidget {
 ///
 ///
 class _AvisosRadioState extends State<AvisosRadio> {
-  SarNavarea _character = SarNavarea.sar;
   StreamController _streamController;
+  TipoAviso _tipoAviso = TipoAviso.todos;
 
+  ///
+  ///
+  ///
   @override
   void initState() {
     _streamController = new StreamController();
-    loadData();
+    _loadData();
     super.initState();
   }
 
+  ///
+  ///
+  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +63,9 @@ class _AvisosRadioState extends State<AvisosRadio> {
           IconButton(
             key: Key('refreshIconButton'),
             icon: Icon(FontAwesomeIcons.sync),
-            onPressed: loadData,
+            onPressed: () {
+              _loadData(tipo: _tipoAviso);
+            },
           ),
         ],
       ),
@@ -55,6 +75,34 @@ class _AvisosRadioState extends State<AvisosRadio> {
           if (snapshot.hasData) {
             Map data = snapshot.data;
             List avisos = data['avisos'];
+
+            switch (_tipoAviso) {
+              case TipoAviso.todos:
+                // Do nothing.
+                break;
+              case TipoAviso.sar:
+                avisos.retainWhere((aviso) => aviso['costa'] == 'SAR');
+                break;
+              case TipoAviso.navarea:
+                avisos.retainWhere((aviso) => aviso['costa'] == ' ');
+                break;
+              case TipoAviso.norte:
+                avisos.retainWhere((aviso) => aviso['costa'] == 'N');
+                break;
+              case TipoAviso.leste:
+                avisos.retainWhere((aviso) => aviso['costa'] == 'E');
+                break;
+              case TipoAviso.sul:
+                avisos.retainWhere((aviso) => aviso['costa'] == 'S');
+                break;
+              case TipoAviso.bacia_amazonica:
+                avisos.retainWhere((aviso) => aviso['costa'] == 'I');
+                break;
+              case TipoAviso.hidrovias_geral:
+                avisos.retainWhere((aviso) => aviso['costa'] == 'HG');
+                break;
+            }
+
             return Column(
               children: <Widget>[
                 SizedBox(
@@ -66,7 +114,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(6.0),
-                        child: Text('Atualizado ${data['atualizado']}'),
+                        child: Text('Atualizado ${data['atualizado']} GMT'),
                       ),
                     ),
                   ),
@@ -128,11 +176,29 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   ///
-  loadData() async {
+  _loadData({TipoAviso tipo = TipoAviso.todos}) async {
+    _tipoAviso = tipo;
     _streamController.add(null);
     _getData().then((map) {
       _streamController.add(map);
     });
+  }
+
+  ///
+  ///
+  ///
+  ListTile _getBottomSheetTile(TipoAviso tipo, String label) {
+    return ListTile(
+      title: Text(label),
+      leading: Icon(_tipoAviso == tipo
+          ? FontAwesomeIcons.checkCircle
+          : FontAwesomeIcons.circle),
+      dense: true,
+      onTap: () {
+        Navigator.of(context).pop();
+        _loadData(tipo: tipo);
+      },
+    );
   }
 
   ///
@@ -146,20 +212,37 @@ class _AvisosRadioState extends State<AvisosRadio> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              ListTile(
-                title: const Text('SAR'),
+              _getBottomSheetTile(
+                TipoAviso.todos,
+                'Todos',
               ),
-              ListTile(
-                title: const Text('Navarea V'),
+              _getBottomSheetTile(
+                TipoAviso.sar,
+                'SAR',
               ),
-              ListTile(
-                title: const Text('Costa Norte'),
+              _getBottomSheetTile(
+                TipoAviso.navarea,
+                'Navarea V',
               ),
-              ListTile(
-                title: const Text('Costa Leste'),
+              _getBottomSheetTile(
+                TipoAviso.norte,
+                'Costa Norte',
               ),
-              ListTile(
-                title: const Text('Costa Sul'),
+              _getBottomSheetTile(
+                TipoAviso.leste,
+                'Costa Leste',
+              ),
+              _getBottomSheetTile(
+                TipoAviso.sul,
+                'Costa Sul',
+              ),
+              _getBottomSheetTile(
+                TipoAviso.bacia_amazonica,
+                'Bacia Amazônica',
+              ),
+              _getBottomSheetTile(
+                TipoAviso.hidrovias_geral,
+                'Hidrovias em Geral',
               ),
             ],
           ),

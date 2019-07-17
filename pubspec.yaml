@@ -32,6 +32,7 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   test: ^1.5.1
+  flutter_launcher_icons: ^0.7.2+1
 
 flutter:
   uses-material-design: true
