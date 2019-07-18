@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:ta_safo/routes.dart';
 import 'package:ta_safo/view/Home.dart';
 
-void main() => runApp(TaSafo());
+void main() {
+  runApp(TaSafo());
+}
 
 class TaSafo extends StatelessWidget {
   @override

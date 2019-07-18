@@ -132,11 +132,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
                         subtitle: Text(aviso['textoPT']),
                         trailing:
                             geo.isNotEmpty ? Icon(FontAwesomeIcons.map) : null,
-                        onTap: geo.isNotEmpty
-                            ? () {
-                                print(geo);
-                              }
-                            : null,
+                        onTap: geo.isNotEmpty ? () => _parseGeo(geo) : null,
                       );
                     },
                   ),
@@ -145,8 +141,12 @@ class _AvisosRadioState extends State<AvisosRadio> {
             );
           }
           if (snapshot.hasError) {
-            // TODO : Indicar uma mensagem derro.
-            return Text('Ocorreu um erro');
+            return Center(
+              child: Text(
+                'Não foi possível obter as informações.',
+                style: Theme.of(context).textTheme.body2,
+              ),
+            );
           }
           return Center(
             child: CircularProgressIndicator(),
@@ -159,17 +159,32 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   ///
+  void _parseGeo(String geo) {
+    print(geo);
+  }
+
+  ///
+  ///
+  ///
   Future<Map<String, dynamic>> _getData() async {
     var client = new http.Client();
+
     Map data = {};
-    try {
-      http.Response response = await client.get(
-          'https://www.marinha.mil.br/chm/sites/www.marinha.mil.br.chm/files/opt/avradio.json');
-      // TODO: Tratar Response Status
-      data = json.decode(response.body);
-    } finally {
-      client.close();
+
+    String url = 'https://www.marinha.mil.br/chm/sites/'
+        'www.marinha.mil.br.chm/files/opt/avradio.json';
+
+    http.Response response =
+        await client.get(url).timeout(Duration(seconds: 10));
+
+    if (response.statusCode != 200) {
+      throw Exception("$url - Status Code: ${response.statusCode}");
     }
+
+    // TODO: Armazenar informações caso fique offline.
+
+    data = json.decode(response.body);
+    client.close();
     return data;
   }
 
@@ -181,6 +196,9 @@ class _AvisosRadioState extends State<AvisosRadio> {
     _streamController.add(null);
     _getData().then((map) {
       _streamController.add(map);
+    }).catchError((error) {
+      print(error);
+      _streamController.addError(error);
     });
   }
 

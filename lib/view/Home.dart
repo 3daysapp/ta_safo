@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ta_safo/util/Geo.dart';
 import 'package:ta_safo/view/AvisosRadio.dart';
 
 ///
@@ -64,6 +65,9 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Tá Safo'),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.bug_report), onPressed: _testGeo)
+        ],
       ),
       drawer: Drawer(
         child: Text('Drawer'),
@@ -111,5 +115,17 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  void _testGeo() {
+    // new google.maps.Marker({"position": new google.maps.LatLng(-20.703,-40.406666666666666)})
+    // new google.maps.Polygon({"paths": [new google.maps.LatLng(5.6,-48.36666666666667), new google.maps.LatLng(5.633333333333333,-47.38333333333333), new google.maps.LatLng(5.1,-47.36666666666667), new google.maps.LatLng(5.083333333333333,-48.35)]})|new google.maps.Polygon({"paths": [new google.maps.LatLng(5.433333333333334,-47.11666666666667), new google.maps.LatLng(5.433333333333334,-45.36666666666667), new google.maps.LatLng(5.166666666666667,-45.36666666666667), new google.maps.LatLng(5.166666666666667,-47.11666666666667)]})
+    // new google.maps.Circle({"center": new google.maps.LatLng(-0.5898333333333333,-47.92466666666667), "radius": 37.04})|new google.maps.Marker({"position": new google.maps.LatLng(-0.5898333333333333,-47.92466666666667)})
+    // new google.maps.Polyline({"geodesic": true, "path": [new google.maps.LatLng(-3.6708333333333334,-38.4825), new google.maps.LatLng(-3.671666666666667,-38.492666666666665), new google.maps.LatLng(-3.711333333333333,-38.49433333333333), new google.maps.LatLng(-3.7003333333333335,-38.48983333333334), new google.maps.LatLng(-3.7068333333333334,-38.482166666666664)]})
+
+    String geo =
+        'new google.maps.Polygon({"paths": [new google.maps.LatLng(5.6,-48.36666666666667), new google.maps.LatLng(5.633333333333333,-47.38333333333333), new google.maps.LatLng(5.1,-47.36666666666667), new google.maps.LatLng(5.083333333333333,-48.35)]})|new google.maps.Polygon({"paths": [new google.maps.LatLng(5.433333333333334,-47.11666666666667), new google.maps.LatLng(5.433333333333334,-45.36666666666667), new google.maps.LatLng(5.166666666666667,-45.36666666666667), new google.maps.LatLng(5.166666666666667,-47.11666666666667)]})';
+
+    Geo.valid(geo);
   }
 }
