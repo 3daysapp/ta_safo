@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ta_safo/view/AvisosMauTempo.dart';
 import 'package:ta_safo/view/AvisosRadio.dart';
 import 'package:ta_safo/view/Home.dart';
 
@@ -7,6 +8,7 @@ class Routes {
     return {
       Home.routeName: (_) => Home(),
       AvisosRadio.routeName: (_) => AvisosRadio(),
+      AvisosMauTempo.routeName: (_) => AvisosMauTempo(),
     };
   }
 }

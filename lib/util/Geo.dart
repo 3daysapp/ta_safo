@@ -1,91 +1,70 @@
 import 'dart:convert';
 
 class Geo {
-  static String valid(String geo) {
+  static List<Map<String, dynamic>> parse(String geo) {
     RegExp polygonRegex = new RegExp(
-      r"(.*)(new google.maps.Polygon\()(.*)(\))(.*)",
+      r"new google.maps.Polygon\((.*)\)",
+      caseSensitive: false,
+      multiLine: true,
+    );
+
+    RegExp polylineRegex = new RegExp(
+      r"new google.maps.Polyline\((.*)\)",
       caseSensitive: false,
       multiLine: true,
     );
 
     RegExp circleRegex = new RegExp(
-      r"(.*)(new google.maps.Circle\()(.*)(\))(.*)",
+      r"new google.maps.Circle\((.*)\)",
       caseSensitive: false,
       multiLine: true,
     );
 
     RegExp markerRegex = new RegExp(
-      r"(.*)(new google.maps.Marker\()(.*)(\))(.*)",
+      r"new google.maps.Marker\((.*)\)",
       caseSensitive: false,
       multiLine: true,
     );
-
-//    RegExp latLngRegex = new RegExp(
-//      r"(.*)(new google.maps.LatLng\()(.*),(.*)(\))(.*)",
-//      caseSensitive: false,
-//      multiLine: true,
-//    );
 
     RegExp latLngRegex = new RegExp(
-      r"(new google.maps.LatLng\()(\W+),(\W+)(\))",
+      r"new google.maps.LatLng\(([0-9\.-]*),([0-9\.-]*)\)",
       caseSensitive: false,
       multiLine: true,
     );
 
+    List<Map<String, dynamic>> list = [];
+
     geo.split("|").forEach((String part) {
-      print('Part: $part');
+      part = part.replaceAllMapped(
+        polygonRegex,
+        (Match match) => '"polygon" : ${match[1]}',
+      );
 
-      polygonRegex.allMatches(part).forEach((RegExpMatch match) {
-        if (match.groupCount == 5) {
-          String last = match.group(5).isEmpty ? '' : ', ${match.group(5)}';
-          part = '${match.group(1)} "polygon" : ${match.group(3)}$last';
-        }
-      });
+      part = part.replaceAllMapped(
+        polylineRegex,
+        (Match match) => '"polyline" : ${match[1]}',
+      );
 
-      circleRegex.allMatches(part).forEach((RegExpMatch match) {
-//        print('Group Count: ${match.groupCount}');
-//        for (int i = 0; i <= match.groupCount; i++) {
-//          print('Group $i: ${match.group(i)}');
-//        }
+      part = part.replaceAllMapped(
+        circleRegex,
+        (Match match) => '"circle" : ${match[1]}',
+      );
 
-        if (match.groupCount == 5) {
-          String last = match.group(5).isEmpty ? '' : ', ${match.group(5)}';
-          part = '${match.group(1)} "circle" : ${match.group(3)}$last';
-        }
-      });
+      part = part.replaceAllMapped(
+        markerRegex,
+        (Match match) => '"marker" : ${match[1]}',
+      );
 
-      markerRegex.allMatches(part).forEach((RegExpMatch match) {
-        if (match.groupCount == 5) {
-          String last = match.group(5).isEmpty ? '' : ', ${match.group(5)}';
-          part = '${match.group(1)} "marker" : ${match.group(3)}$last';
-        }
-      });
-
-      latLngRegex.allMatches(part).forEach((RegExpMatch match) {
-        print('Group Count: ${match.groupCount}');
-        for (int i = 0; i <= match.groupCount; i++) {
-          print('Group $i: ${match.group(i)}');
-        }
-
-//        if (match.groupCount == 6) {
-//          part = '${match.group(1)}{ "lat": ${match.group(3)}, '
-//              '"lng": ${match.group(4)}} ${match.group(6)}';
-//        }
-      });
+      part = part.replaceAllMapped(
+        latLngRegex,
+        (Match match) => '{ "lat" : ${match[1]}, "lng" : ${match[2]}}',
+      );
 
       part = '{${part.trim()}}';
 
-      try {
-        var map = json.decode(part);
-        print('SUCESS: $map');
-      } catch (e) {
-        print('Processed: $part');
-        print('ERROR: $e');
-      }
-
-      print('\n');
+      list.add(json.decode(part));
     });
 
-    return geo;
+    return list;
   }
 }

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:ta_safo/util/Geo.dart';
 
 ///
 ///
@@ -76,6 +77,8 @@ class _AvisosRadioState extends State<AvisosRadio> {
             Map data = snapshot.data;
             List avisos = data['avisos'];
 
+            geometryTest(avisos);
+
             switch (_tipoAviso) {
               case TipoAviso.todos:
                 // Do nothing.
@@ -126,13 +129,25 @@ class _AvisosRadioState extends State<AvisosRadio> {
                     itemCount: avisos.length,
                     itemBuilder: (BuildContext context, int index) {
                       Map aviso = avisos.elementAt(index);
-                      String geo = aviso['geometry'];
+
+                      List<Map<String, dynamic>> geos = [];
+
+                      try {
+                        String geo = aviso['geometry'];
+                        if (geo.isNotEmpty) {
+                          geos = Geo.parse(aviso['geometry']);
+                        }
+                      } catch (e) {
+                        // Do nothing.
+                      }
+
                       return ListTile(
                         title: Text(aviso['numero']),
                         subtitle: Text(aviso['textoPT']),
                         trailing:
-                            geo.isNotEmpty ? Icon(FontAwesomeIcons.map) : null,
-                        onTap: geo.isNotEmpty ? () => _parseGeo(geo) : null,
+                            geos.isNotEmpty ? Icon(FontAwesomeIcons.map) : null,
+                        onTap:
+                            geos.isNotEmpty ? () => _showGeometry(geos) : null,
                       );
                     },
                   ),
@@ -159,8 +174,8 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   ///
-  void _parseGeo(String geo) {
-    print(geo);
+  void _showGeometry(List<Map<String, dynamic>> geos) {
+    geos.forEach((geo) => print(geo));
   }
 
   ///
@@ -227,8 +242,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: ListView(
             children: <Widget>[
               _getBottomSheetTile(
                 TipoAviso.todos,
@@ -267,5 +281,20 @@ class _AvisosRadioState extends State<AvisosRadio> {
         );
       },
     );
+  }
+
+  ///
+  ///
+  ///
+  Future<void> geometryTest(List avisos) async {
+    avisos.forEach((aviso) {
+      try {
+        String geo = aviso['geometry'];
+        if (geo.isNotEmpty) Geo.parse(geo);
+      } catch (e) {
+        // TODO: Relatar crash.
+        print("ERRO: $e");
+      }
+    });
   }
 }
