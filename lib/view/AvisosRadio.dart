@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:ta_safo/util/Geo.dart';
+import 'package:ta_safo/view/AvisosRadioMapa.dart';
 
 ///
 ///
@@ -175,7 +176,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   void _showGeometry(List<Map<String, dynamic>> geos) {
-    geos.forEach((geo) => print(geo));
+    Navigator.of(context).pushNamed(AvisosRadioMapa.routeName, arguments: geos);
   }
 
   ///
@@ -196,6 +197,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
       throw Exception("$url - Status Code: ${response.statusCode}");
     }
 
+    // TODO: User cloud storage para cache.
     // TODO: Armazenar informações caso fique offline.
 
     data = json.decode(response.body);

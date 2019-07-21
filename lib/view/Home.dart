@@ -20,6 +20,8 @@ class _HomeState extends State<Home> {
   List<Map<String, String>> buttons;
   List<Map<String, String>> links;
 
+  // https://flutter.dev/docs/cookbook/navigation/navigate-with-arguments
+
   @override
   void initState() {
     super.initState();
@@ -71,6 +73,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Tá Safo'),
+//        actions: <Widget>[
+//          IconButton(
+//            icon: Icon(Icons.bug_report),
+//            onPressed: _testMap,
+//          )
+//        ],
       ),
       drawer: Drawer(
         child: ListView(

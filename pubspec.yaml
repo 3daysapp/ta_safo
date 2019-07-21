@@ -11,20 +11,25 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^0.1.2
-  # https://fontawesome.com/icons?d=gallery&m=free
+  ## https://fontawesome.com/icons?d=gallery&m=free
   font_awesome_flutter: ^8.5.0
-  # https://pub.dev/packages/dio
   http: ^0.12.0+2
-  shared_preferences: 0.5.3+3
-  package_info: ^0.4.0+3
-  path_provider: ^1.1.2
-  device_info: ^0.4.0+2
-  cached_network_image: ^1.1.0
+  # shared_preferences: 0.5.3+4
+  # package_info: ^0.4.0+5
+  ## Comentado para testes com o flutter_map
+  # path_provider: ^1.1.0
+  # device_info: ^0.4.0+2
+  ## Comentado para testes com o flutter_map
+  # cached_network_image: ^1.1.0
   url_launcher: ^5.0.5
-  # https://pub.dev/packages/image_picker
-  # https://pub.dev/packages/provider
-  # https://pub.dev/packages/google_maps_flutter
+  ## https://pub.dev/packages/image_picker
+  ## https://pub.dev/packages/provider
+  ## https://pub.dev/packages/google_maps_flutter
+  # google_maps_flutter: ^0.5.19+2
+  ## https://pub.dev/packages/flutter_map
+  flutter_map: ^0.6.1+2
   # https://pub.dev/packages/firebase_crashlytics
+  firebase_crashlytics: ^0.0.4+11
 
 dev_dependencies:
   flutter_test:
