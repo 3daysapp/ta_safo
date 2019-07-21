@@ -20,8 +20,6 @@ class _HomeState extends State<Home> {
   List<Map<String, String>> buttons;
   List<Map<String, String>> links;
 
-  // https://flutter.dev/docs/cookbook/navigation/navigate-with-arguments
-
   @override
   void initState() {
     super.initState();

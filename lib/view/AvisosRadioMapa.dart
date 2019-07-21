@@ -46,12 +46,10 @@ class _AvisosRadioMapaState extends State<AvisosRadioMapa> {
 
     List<Polygon> polygons = [];
     List<Polyline> polylines = [];
-    List<Circle> circles = [];
+    List<CircleMarker> circles = [];
     List<Marker> markers = [];
 
     LatLng center;
-
-    print(args);
 
     args.forEach((geo) {
       LatLng latLng;
@@ -71,17 +69,40 @@ class _AvisosRadioMapaState extends State<AvisosRadioMapa> {
         );
       } else if (geo.containsKey('polygon')) {
         List paths = geo['polygon']['paths'];
-        List<LatLng> latLngs = _getLatLngList(paths);
+        List<LatLng> points = _getLatLngList(paths);
         polygons.add(
           Polygon(
-            points: latLngs,
+            points: points,
+            color: Colors.red,
           ),
         );
-        latLng = latLngs.first;
+        latLng = points.first;
       } else if (geo.containsKey('polyline')) {
-        print("Polyline: ${geo['polyline']}");
+        List paths = geo['polyline']['path'];
+        List<LatLng> points = _getLatLngList(paths);
+        polylines.add(
+          Polyline(
+            points: points,
+            strokeWidth: 4.0,
+            color: Colors.red,
+          ),
+        );
+        latLng = points.first;
       } else if (geo.containsKey('circle')) {
-        print("Circle: ${geo['circle']}");
+        var circle = geo['circle'];
+        circles.add(
+          CircleMarker(
+            point: LatLng(
+              circle['center']['lat'],
+              circle['center']['lng'],
+            ),
+            color: Colors.transparent,
+            radius: circle['radius'],
+            useRadiusInMeter: true,
+            borderColor: Colors.red,
+            borderStrokeWidth: 2.0,
+          ),
+        );
       } else {
         // TODO : Disparar crash.
       }
@@ -109,6 +130,13 @@ class _AvisosRadioMapaState extends State<AvisosRadioMapa> {
       },
     ));
 
+//    layers.add(
+//      TileLayerOptions(
+//        urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+//        subdomains: ['a', 'b', 'c'],
+//      ),
+//    );
+
     if (polygons.isNotEmpty) {
       layers.add(
         PolygonLayerOptions(
@@ -125,10 +153,13 @@ class _AvisosRadioMapaState extends State<AvisosRadioMapa> {
       );
     }
 
-    // CircleMaker
-    // if(circles.isNotEmpty) {
-    //   layers.add(CircleLayerOptions(circles: circles,),);
-    // }
+    if (circles.isNotEmpty) {
+      layers.add(
+        CircleLayerOptions(
+          circles: circles,
+        ),
+      );
+    }
 
     if (markers.isNotEmpty) {
       layers.add(

@@ -78,12 +78,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
             Map data = snapshot.data;
             List avisos = data['avisos'];
 
-            geometryTest(avisos);
-
             switch (_tipoAviso) {
-              case TipoAviso.todos:
-                // Do nothing.
-                break;
               case TipoAviso.sar:
                 avisos.retainWhere((aviso) => aviso['costa'] == 'SAR');
                 break;
@@ -104,6 +99,9 @@ class _AvisosRadioState extends State<AvisosRadio> {
                 break;
               case TipoAviso.hidrovias_geral:
                 avisos.retainWhere((aviso) => aviso['costa'] == 'HG');
+                break;
+              default:
+                // Do nothing.
                 break;
             }
 
@@ -139,7 +137,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
                           geos = Geo.parse(aviso['geometry']);
                         }
                       } catch (e) {
-                        // Do nothing.
+                        // TODO: Relatar crash.
                       }
 
                       return ListTile(
@@ -176,7 +174,10 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   void _showGeometry(List<Map<String, dynamic>> geos) {
-    Navigator.of(context).pushNamed(AvisosRadioMapa.routeName, arguments: geos);
+    Navigator.of(context).pushNamed(
+      AvisosRadioMapa.routeName,
+      arguments: geos,
+    );
   }
 
   ///
@@ -215,6 +216,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
       _streamController.add(map);
     }).catchError((error) {
       print(error);
+      // TODO: Disparar crash.
       _streamController.addError(error);
     });
   }
@@ -283,20 +285,5 @@ class _AvisosRadioState extends State<AvisosRadio> {
         );
       },
     );
-  }
-
-  ///
-  ///
-  ///
-  Future<void> geometryTest(List avisos) async {
-    avisos.forEach((aviso) {
-      try {
-        String geo = aviso['geometry'];
-        if (geo.isNotEmpty) Geo.parse(geo);
-      } catch (e) {
-        // TODO: Relatar crash.
-        print("ERRO: $e");
-      }
-    });
   }
 }

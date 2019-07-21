@@ -119,6 +119,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
       _streamController.add(data);
     }).catchError((error) {
       print(error);
+      // TODO: Disparar crash.
       _streamController.addError(error);
     });
   }
