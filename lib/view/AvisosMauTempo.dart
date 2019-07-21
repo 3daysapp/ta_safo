@@ -53,8 +53,19 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
         stream: _streamController.stream,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
-            MauTempo.parse(snapshot.data);
-            return Text('Carregado.');
+            List<MauTempo> lista = MauTempo.parse(snapshot.data);
+
+            return ListView.separated(
+              separatorBuilder: (BuildContext context, int index) => Divider(),
+              itemCount: lista.length,
+              itemBuilder: (BuildContext context, int index) {
+                MauTempo item = lista.elementAt(index);
+                return ListTile(
+                  title: Text("${item.area} - ${item.numero}"),
+                  subtitle: Text(item.texto),
+                );
+              },
+            );
           }
           if (snapshot.hasError) {
             return Center(

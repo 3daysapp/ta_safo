@@ -1,5 +1,6 @@
-import 'package:flutter/widgets.dart';
-
+///
+///
+///
 class MauTempo {
   final String area;
   final String numero;
@@ -7,9 +8,10 @@ class MauTempo {
 
   MauTempo(this.area, this.numero, this.texto);
 
-  static void parse(String html) {
-    print("Length: ${html.length}");
-
+  ///
+  ///
+  ///
+  static List<MauTempo> parse(String html) {
     RegExp articleRegex = RegExp(
       r"\<article.*>[\s\S]*<div.*>(<p>[\s\S]*</p>)[\s\S]*</div.*</article>",
       caseSensitive: false,
@@ -22,25 +24,53 @@ class MauTempo {
       multiLine: true,
     );
 
-    articleRegex.allMatches(html).forEach((RegExpMatch match) {
-//      debugPrint(match[1]);
+    RegExp clearTags = RegExp(
+      r"<[^>]*>",
+      caseSensitive: false,
+      multiLine: true,
+    );
 
+    RegExp numeroRegex = RegExp(
+      r"\<u><strong>(.*?)</strong></u>",
+      caseSensitive: false,
+      multiLine: true,
+    );
+
+    RegExp textoRegex = RegExp(
+      r"\<br />([\s\S]*)$",
+      caseSensitive: false,
+      multiLine: true,
+    );
+
+    List<MauTempo> list = [];
+
+    articleRegex.allMatches(html).forEach((RegExpMatch match) {
       String area;
 
       pRegex.allMatches(match[1]).forEach((RegExpMatch match) {
-        if (match[1].startsWith("<strong>")) {
-          area = match[1].replaceAll("<[^>]*>", "");
-          debugPrint(area);
-        } else {
-          debugPrint(match[1]);
+        if (match[1].startsWith('<span style="color:#ff0000;"><strong>')) {
+          String tmpArea = match[1].replaceAll(clearTags, "");
+          if (tmpArea != area) {
+            area = tmpArea;
+          }
+        } else if (match[1].startsWith("<u>")) {
+          if (area != null) {
+            String numero = numeroRegex
+                .firstMatch(match[1])
+                .group(1)
+                .replaceAll(clearTags, "");
+
+            String texto = textoRegex
+                .firstMatch(match[1])
+                .group(1)
+                .replaceAll(clearTags, "");
+
+            list.add(MauTempo(area, numero, texto));
+          }
         }
       });
-
-//      print("Group Count: ${match.groupCount}");
-//
-//      for (int i = 0; i <= match.groupCount; i++) {
-//        print("Group $i: ${match.group(i)}");
-//      }
     });
+
+    return list;
   }
 }
