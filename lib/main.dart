@@ -7,11 +7,11 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 ///
 ///
 void main() {
-//  Crashlytics.instance.enableInDevMode = true;
-//
-//  FlutterError.onError = (FlutterErrorDetails details) {
-//    Crashlytics.instance.onError(details);
-//  };
+  Crashlytics.instance.enableInDevMode = true;
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    Crashlytics.instance.onError(details);
+  };
 
   runApp(TaSafo());
 }

@@ -116,7 +116,10 @@ class _AvisosRadioState extends State<AvisosRadio> {
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(6.0),
-                        child: Text('Atualizado ${data['atualizado']} GMT'),
+                        child: Text(
+                          'Atualizado ${data['atualizado']} GMT',
+                          key: Key('atualizadoText'),
+                        ),
                       ),
                     ),
                   ),

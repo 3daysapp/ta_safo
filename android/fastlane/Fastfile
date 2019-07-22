@@ -25,16 +25,16 @@ platform :android do
   lane :internal do
     ensure_git_branch(branch: 'master')
 
-#    ensure_git_status_clean
+    ensure_git_status_clean
 
-    build_number = number_of_commits() - 6
+    build_number = number_of_commits() - 8
 
     build_name = "#{build_number / 10000}.#{(build_number / 100) % 100}.#{build_number % 100}"
 
     Dir.chdir("../../") do
       sh("flutter", "pub", "get")
       sh("flutter", "pub", "run", "flutter_launcher_icons:main")
-#      sh("screenshots")
+      sh("screenshots")
       sh("flutter", "clean")
       sh('flutter', 'build', 'appbundle', '--target-platform', 'android-arm,android-arm64', "--build-number=#{build_number}", "--build-name=#{build_name}")
     end

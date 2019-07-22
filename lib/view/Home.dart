@@ -29,16 +29,19 @@ class _HomeState extends State<Home> {
       {
         'label': 'Avisos-Rádio\nNáuticos e SAR',
         'route': AvisosRadio.routeName,
+        'key': 'avisosRadioNauticos',
       },
       // https://www.marinha.mil.br/chm/dados-do-segnav-aviso-aos-navegantes-tela/avisos-aos-navegantes
 //    {
 //      'label': 'Avisos aos\nNavegantes',
 //      'route': AvisosRadio.routeName,
+//      'key': 'avisoAosNavegantes',
 //    },
       // https://www.marinha.mil.br/chm/dados-do-smm-avisos-de-mau-tempo/avisos-de-mau-tempo
       {
         'label': 'Avisos de\nMau Tempo',
         'route': AvisosMauTempo.routeName,
+        'key': 'avisosDeMauTempo',
       },
       // http://portal.embratel.com.br/movelmaritimo/previsao-do-tempo/
     ];
@@ -69,6 +72,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: Key('homeScaffold'),
       appBar: AppBar(
         title: Text('Tá Safo'),
 //        actions: <Widget>[
@@ -100,6 +104,7 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     child: FlatButton(
+                      key: Key('${button['key']}Button'),
                       splashColor: Colors.green,
                       onPressed: () =>
                           Navigator.of(context).pushNamed(button['route']),
@@ -153,6 +158,7 @@ class _HomeState extends State<Home> {
     list.addAll(buttons
         .map(
           (button) => ListTile(
+            key: Key('${button['key']}Tile'),
             leading: Icon(Icons.label),
             title: Text(button['label'].replaceAll('\n', ' ')),
             onTap: () => Navigator.of(context).popAndPushNamed(button['route']),
