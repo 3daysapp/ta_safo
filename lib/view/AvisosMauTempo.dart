@@ -20,6 +20,8 @@ class AvisosMauTempo extends StatefulWidget {
 ///
 class _AvisosMauTempoState extends State<AvisosMauTempo> {
   StreamController _streamController;
+  List<String> _areas = [];
+  String _filtroArea;
 
   ///
   ///
@@ -41,10 +43,15 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
         title: Text('Avisos de Mau Tempo'),
         actions: <Widget>[
           IconButton(
+            key: Key('filterIconButton'),
+            icon: Icon(FontAwesomeIcons.filter),
+            onPressed: () => _settingModalBottomSheet(context),
+          ),
+          IconButton(
             key: Key('refreshIconButton'),
             icon: Icon(FontAwesomeIcons.sync),
             onPressed: () {
-              _loadData();
+              _loadData(filtro: _filtroArea);
             },
           ),
         ],
@@ -55,16 +62,61 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
           if (snapshot.hasData) {
             List<MauTempo> lista = MauTempo.parse(snapshot.data);
 
-            return ListView.separated(
-              separatorBuilder: (BuildContext context, int index) => Divider(),
-              itemCount: lista.length,
-              itemBuilder: (BuildContext context, int index) {
-                MauTempo item = lista.elementAt(index);
-                return ListTile(
-                  title: Text("${item.area} - ${item.numero}"),
-                  subtitle: Text(item.texto),
+            if (_filtroArea != null) {
+              lista.retainWhere((aviso) => aviso.area == _filtroArea);
+            }
+
+            String area;
+
+            List<Widget> listWidgets = [];
+
+            lista.forEach((MauTempo item) {
+              if (area != item.area) {
+                if (area != null) {
+                  listWidgets.add(Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Divider(),
+                  ));
+                }
+
+                listWidgets.add(
+                  SizedBox(
+                    width: double.infinity,
+                    height: 40.0,
+                    child: Center(
+                      child: Text(
+                        item.area,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textScaleFactor: 1.2,
+                      ),
+                    ),
+                  ),
                 );
-              },
+                area = item.area;
+                _areas.add(area);
+              }
+
+              listWidgets.add(
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: ListTile(
+                    title: Text(item.numero),
+                    subtitle: Text(item.texto),
+                  ),
+                ),
+              );
+            });
+
+            listWidgets.add(SizedBox(
+              height: 30,
+              width: double.infinity,
+              child: Text(''),
+            ));
+
+            return ListView(
+              children: listWidgets,
             );
           }
           if (snapshot.hasError) {
@@ -75,6 +127,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
               ),
             );
           }
+
           return Center(
             child: CircularProgressIndicator(),
           );
@@ -113,7 +166,8 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
   ///
   ///
   ///
-  _loadData() async {
+  void _loadData({String filtro}) async {
+    _filtroArea = filtro;
     _streamController.add(null);
     _getData().then((data) {
       _streamController.add(data);
@@ -122,5 +176,45 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
       // TODO: Disparar crash.
       _streamController.addError(error);
     });
+  }
+
+  ///
+  ///
+  ///
+  ListTile _getBottomSheetTile(String area, String label) {
+    return ListTile(
+        title: Text(label),
+        leading: Icon(_filtroArea == area
+            ? FontAwesomeIcons.checkCircle
+            : FontAwesomeIcons.circle),
+        dense: true,
+        onTap: () {
+          Navigator.of(context).pop();
+          _loadData(filtro: area);
+        });
+  }
+
+  ///
+  ///
+  ///
+  void _settingModalBottomSheet(context) {
+    List<Widget> items = [];
+
+    items.add(_getBottomSheetTile(null, "TODAS"));
+
+    items.addAll(
+      _areas.map((area) => _getBottomSheetTile(area, area)).toList(),
+    );
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          child: ListView(
+            children: items,
+          ),
+        );
+      },
+    );
   }
 }

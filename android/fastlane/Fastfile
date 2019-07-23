@@ -27,7 +27,7 @@ platform :android do
 
     ensure_git_status_clean
 
-    build_number = number_of_commits() - 8
+    build_number = number_of_commits() - 9
 
     build_name = "#{build_number / 10000}.#{(build_number / 100) % 100}.#{build_number % 100}"
 

@@ -36,7 +36,7 @@ class AvisosRadio extends StatefulWidget {
 ///
 class _AvisosRadioState extends State<AvisosRadio> {
   StreamController _streamController;
-  TipoAviso _tipoAviso = TipoAviso.todos;
+  TipoAviso _filtroTipo = TipoAviso.todos;
 
   ///
   ///
@@ -66,7 +66,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
             key: Key('refreshIconButton'),
             icon: Icon(FontAwesomeIcons.sync),
             onPressed: () {
-              _loadData(tipo: _tipoAviso);
+              _loadData(tipo: _filtroTipo);
             },
           ),
         ],
@@ -78,7 +78,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
             Map data = snapshot.data;
             List avisos = data['avisos'];
 
-            switch (_tipoAviso) {
+            switch (_filtroTipo) {
               case TipoAviso.sar:
                 avisos.retainWhere((aviso) => aviso['costa'] == 'SAR');
                 break;
@@ -213,7 +213,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   _loadData({TipoAviso tipo = TipoAviso.todos}) async {
-    _tipoAviso = tipo;
+    _filtroTipo = tipo;
     _streamController.add(null);
     _getData().then((map) {
       _streamController.add(map);
@@ -229,8 +229,9 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ListTile _getBottomSheetTile(TipoAviso tipo, String label) {
     return ListTile(
+      key: Key('${tipo.toString()}Tile'),
       title: Text(label),
-      leading: Icon(_tipoAviso == tipo
+      leading: Icon(_filtroTipo == tipo
           ? FontAwesomeIcons.checkCircle
           : FontAwesomeIcons.circle),
       dense: true,

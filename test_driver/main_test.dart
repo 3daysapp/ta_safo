@@ -50,6 +50,8 @@ void main() {
       SerializableFinder avisosRadioNauticosTile =
           find.byValueKey('avisosRadioNauticosTile');
 
+      await driver.scrollIntoView(avisosRadioNauticosTile);
+
       await driver.waitFor(avisosRadioNauticosTile);
 
       await driver.tap(avisosRadioNauticosTile);
@@ -59,16 +61,39 @@ void main() {
       await driver.waitFor(atualizadoText);
 
       await screenshot(driver, config, '2');
-
-      SerializableFinder pageBack = find.pageBack();
-
-      await driver.tap(pageBack);
     }, timeout: Timeout(Duration(seconds: 30)));
 
+    ///
+    ///
+    ///
+    test('Avisos-Rádio Náuticos Filter Test', () async {
+      SerializableFinder filterIconButton = find.byValueKey('filterIconButton');
+
+      await driver.waitFor(filterIconButton);
+
+      await driver.tap(filterIconButton);
+
+      SerializableFinder tipoAvisoSarTile =
+          find.byValueKey('TipoAviso.sarTile');
+
+      await driver.waitFor(tipoAvisoSarTile);
+
+      await screenshot(driver, config, '3');
+
+      await driver.tap(tipoAvisoSarTile);
+
+      SerializableFinder atualizadoText = find.byValueKey('atualizadoText');
+
+      await driver.waitFor(atualizadoText);
+
+    }, timeout: Timeout(Duration(seconds: 30)));
+
+    // TODO: Teste de reload.
+
+    ///
+    ///
+    ///
     // TODO: Teste com o mapa.
-    ///
-    ///
-    ///
 //    test('Avisos-Rádio Náuticos Mapa Test', () async {
 //      SerializableFinder avisosRadioList = find.byValueKey('avisosRadioList');
 //      await driver.waitFor(avisosRadioList);
@@ -77,20 +102,59 @@ void main() {
     ///
     ///
     ///
+    test('Avisos-Rádio Náuticos Page Back Test', () async {
+      SerializableFinder pageBack = find.pageBack();
+      await driver.tap(pageBack);
+    }, timeout: Timeout(Duration(seconds: 30)));
+
+    ///
+    ///
+    ///
+    test('Avisos aos Navegantes Test', () async {
+      SerializableFinder avisosAosNavegantesButton =
+          find.byValueKey('avisoAosNavegantesButton');
+
+      await driver.scrollIntoView(avisosAosNavegantesButton);
+
+      await driver.waitFor(avisosAosNavegantesButton);
+
+      await driver.tap(avisosAosNavegantesButton);
+
+      await screenshot(driver, config, '4');
+
+      SerializableFinder pageBack = find.pageBack();
+
+      await driver.tap(pageBack);
+    }, timeout: Timeout(Duration(seconds: 30)));
+
+    // TODO: Explorar os avisos aos navegantes. Não tirar print.
+    // TODO: areaMaritimaHidroviasGeral
+    // TODO: hidroviaParaguaiParana
+    // TODO: hidroviaTieteParana
+
+    ///
+    ///
+    ///
     test('Avisos de Mau Tempo Test', () async {
       SerializableFinder avisosDeMauTempoButton =
           find.byValueKey('avisosDeMauTempoButton');
+
+      await driver.scrollIntoView(avisosDeMauTempoButton);
 
       await driver.waitFor(avisosDeMauTempoButton);
 
       await driver.tap(avisosDeMauTempoButton);
 
       // FIXME: Esperar a tela carregar os dados.
-      await screenshot(driver, config, '3');
+      await screenshot(driver, config, '5');
 
       SerializableFinder pageBack = find.pageBack();
 
       await driver.tap(pageBack);
     }, timeout: Timeout(Duration(seconds: 30)));
+
+    // TODO: Teste com filtro.
+
+    // TODO: Teste de reload.
   });
 }

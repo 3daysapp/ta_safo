@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_safo/view/AvisosMauTempo.dart';
+import 'package:ta_safo/view/AvisosNavegantes.dart';
 import 'package:ta_safo/view/AvisosRadio.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,27 +18,24 @@ class Home extends StatefulWidget {
 ///
 ///
 class _HomeState extends State<Home> {
-  List<Map<String, String>> buttons;
-  List<Map<String, String>> links;
-
+  ///
+  ///
+  ///
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
 
-    buttons = [
-      // https://www.marinha.mil.br/chm/sites/www.marinha.mil.br.chm/files/opt/avradio.json
+    final List<Map<String, String>> buttons = [
       {
         'label': 'Avisos-Rádio\nNáuticos e SAR',
         'route': AvisosRadio.routeName,
         'key': 'avisosRadioNauticos',
       },
-      // https://www.marinha.mil.br/chm/dados-do-segnav-aviso-aos-navegantes-tela/avisos-aos-navegantes
-//    {
-//      'label': 'Avisos aos\nNavegantes',
-//      'route': AvisosRadio.routeName,
-//      'key': 'avisoAosNavegantes',
-//    },
-      // https://www.marinha.mil.br/chm/dados-do-smm-avisos-de-mau-tempo/avisos-de-mau-tempo
+      {
+        'label': 'Avisos aos\nNavegantes',
+        'route': AvisosNavegantes.routeName,
+        'key': 'avisoAosNavegantes',
+      },
       {
         'label': 'Avisos de\nMau Tempo',
         'route': AvisosMauTempo.routeName,
@@ -46,7 +44,7 @@ class _HomeState extends State<Home> {
       // http://portal.embratel.com.br/movelmaritimo/previsao-do-tempo/
     ];
 
-    links = [
+    List<Map<String, String>> links = [
       {
         'label': 'Marinha do Brasil',
         'url': 'https://www.marinha.mil.br/',
@@ -64,13 +62,7 @@ class _HomeState extends State<Home> {
         'url': 'http://portal.embratel.com.br/movelmaritimo/'
       }
     ];
-  }
 
-  ///
-  ///
-  ///
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       key: Key('homeScaffold'),
       appBar: AppBar(
@@ -85,13 +77,17 @@ class _HomeState extends State<Home> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: _drawerData(context),
+          children: _drawerData(
+            context: context,
+            buttons: buttons,
+            links: links,
+          ),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GridView.count(
-          crossAxisCount: 2, // TODO - Responsividade através do MediaQuery
+          crossAxisCount: width ~/ 200,
           children: buttons
               .map(
                 (button) => Padding(
@@ -137,7 +133,11 @@ class _HomeState extends State<Home> {
   ///
   ///
   ///
-  List<Widget> _drawerData(BuildContext context) {
+  List<Widget> _drawerData({
+    BuildContext context,
+    List<Map<String, dynamic>> buttons,
+    List<Map<String, dynamic>> links,
+  }) {
     List<Widget> list = [];
 
     list.add(UserAccountsDrawerHeader(
