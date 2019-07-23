@@ -27,7 +27,7 @@ platform :android do
 
     ensure_git_status_clean
 
-    build_number = number_of_commits() - 9
+    build_number = number_of_commits() - 10
 
     build_name = "#{build_number / 10000}.#{(build_number / 100) % 100}.#{build_number % 100}"
 
@@ -35,6 +35,9 @@ platform :android do
       sh("flutter", "pub", "get")
       sh("flutter", "pub", "run", "flutter_launcher_icons:main")
       sh("screenshots")
+      sh("/Applications/ImageOptim.app/Contents/MacOS/ImageOptim", "android/fastlane/metadata/android/pt-BR/images/phoneScreenshots/")
+      sh("/Applications/ImageOptim.app/Contents/MacOS/ImageOptim", "android/fastlane/metadata/android/pt-BR/images/tenInchScreenshots/")
+      sh("/Applications/ImageOptim.app/Contents/MacOS/ImageOptim", "android/app/src/main/res/")
       sh("flutter", "clean")
       sh('flutter', 'build', 'appbundle', '--target-platform', 'android-arm,android-arm64', "--build-number=#{build_number}", "--build-name=#{build_name}")
     end
