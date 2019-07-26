@@ -18,7 +18,7 @@ default_platform(:android)
 platform :android do
   
   # Constant to version.
-  constant = 11
+  constant = 12
   
   desc "Runs all the tests"
   lane :test do

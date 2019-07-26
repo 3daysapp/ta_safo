@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:ta_safo/util/VisualUtil.dart';
 import 'package:ta_safo/widget/DownloadTile.dart';
-//import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 ///
 ///
@@ -30,7 +30,7 @@ class _PrevisaoTempoState extends State<PrevisaoTempo> {
     multiLine: true,
   );
 
-//  AudioPlayer audioPlayer = AudioPlayer();
+  AudioPlayer audioPlayer = AudioPlayer();
 
   StreamController<String> _streamController;
 
@@ -56,7 +56,7 @@ class _PrevisaoTempoState extends State<PrevisaoTempo> {
           IconButton(
             icon: Icon(Icons.stop),
             onPressed: () {
-//              audioPlayer.stop();
+              audioPlayer.stop();
             },
           ),
         ],
@@ -165,7 +165,7 @@ class _PrevisaoTempoState extends State<PrevisaoTempo> {
     } else {
       print(path);
       // TODO: Melhorar player.
-//      audioPlayer.play(path, isLocal: true);
+      audioPlayer.play(path, isLocal: true);
     }
   }
 
@@ -174,7 +174,7 @@ class _PrevisaoTempoState extends State<PrevisaoTempo> {
   ///
   @override
   void deactivate() {
-//    audioPlayer.stop().then((_) => audioPlayer.dispose());
+    audioPlayer.stop().then((_) => audioPlayer.dispose());
     super.deactivate();
   }
 }

@@ -40,7 +40,7 @@ dependencies:
   # OK!
   # flutter_full_pdf_viewer: ^1.0.4
   # https://pub.dev/packages/audioplayers
-  # audioplayers: ^0.13.1
+  audioplayers: ^0.13.1
   # https://pub.dev/packages/flutter_udid
   flutter_udid: ^1.0.0
 
