@@ -77,7 +77,7 @@ class _AvisosNavegantesState extends State<AvisosNavegantes> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GridView.count(
-          crossAxisCount: width ~/ 200,
+          crossAxisCount: width >= 1024 ? width ~/ 200 : 2,
           children: buttons
               .map(
                 (button) => Padding(

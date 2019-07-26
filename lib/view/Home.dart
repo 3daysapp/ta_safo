@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ta_safo/view/AvisosMauTempo.dart';
 import 'package:ta_safo/view/AvisosNavegantes.dart';
 import 'package:ta_safo/view/AvisosRadio.dart';
+//import 'package:ta_safo/view/PrevisaoTempo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ///
@@ -41,7 +42,11 @@ class _HomeState extends State<Home> {
         'route': AvisosMauTempo.routeName,
         'key': 'avisosDeMauTempo',
       },
-      // http://portal.embratel.com.br/movelmaritimo/previsao-do-tempo/
+//      {
+//        'label': 'Previsão\ndo Tempo',
+//        'route': PrevisaoTempo.routeName,
+//        'key': 'previsaoDoTempo',
+//      },
     ];
 
     List<Map<String, String>> links = [
@@ -57,10 +62,10 @@ class _HomeState extends State<Home> {
         'label': 'Centro de Hidrografia da Marinha',
         'url': 'https://www.marinha.mil.br/chm/',
       },
-      {
-        'label': 'Serviço Móvel Marítimo',
-        'url': 'http://portal.embratel.com.br/movelmaritimo/'
-      }
+//      {
+//        'label': 'Serviço Móvel Marítimo',
+//        'url': 'http://portal.embratel.com.br/movelmaritimo/'
+//      }
     ];
 
     return Scaffold(
@@ -87,7 +92,7 @@ class _HomeState extends State<Home> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GridView.count(
-          crossAxisCount: width ~/ 200,
+          crossAxisCount: width >= 1024 ? width ~/ 200 : 2,
           children: buttons
               .map(
                 (button) => Padding(

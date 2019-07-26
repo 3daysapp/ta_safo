@@ -16,18 +16,35 @@
 default_platform(:android)
 
 platform :android do
+  
+  # Constant to version.
+  constant = 11
+  
   desc "Runs all the tests"
   lane :test do
     gradle(task: "test")
   end
 
+  desc "Development"
+  lane :dev do
+    ensure_git_branch(branch: 'master')
+
+    build_number = number_of_commits() - constant
+
+    build_name = "#{build_number / 10000}.#{(build_number / 100) % 100}.#{build_number % 100}"
+
+    puts build_number
+
+    puts build_name
+  end
+  
   desc "Submit a new build to Internal Track on Play"
   lane :internal do
     ensure_git_branch(branch: 'master')
 
     ensure_git_status_clean
 
-    build_number = number_of_commits() - 10
+    build_number = number_of_commits() - constant
 
     build_name = "#{build_number / 10000}.#{(build_number / 100) % 100}.#{build_number % 100}"
 
@@ -42,17 +59,17 @@ platform :android do
       sh('flutter', 'build', 'appbundle', '--target-platform', 'android-arm,android-arm64', "--build-number=#{build_number}", "--build-name=#{build_name}")
     end
 
-#    upload_to_play_store(
-#      track: 'internal',
-#      skip_upload_apk: true,
-#      skip_upload_aab: false,
-#      skip_upload_metadata: false,
-#      skip_upload_images: false,
-#      skip_upload_screenshots: false,
-#      aab: '../build/app/outputs/bundle/release/app.aab',
-#      deactivate_on_promote: false,
-#      rollout: '1.0'
-#    )
+    upload_to_play_store(
+      track: 'internal',
+      skip_upload_apk: true,
+      skip_upload_aab: false,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+      aab: '../build/app/outputs/bundle/release/app.aab',
+      deactivate_on_promote: false,
+      rollout: '1.0'
+    )
   end
 
   desc 'Promote latest release build from internal to beta on Play Store'

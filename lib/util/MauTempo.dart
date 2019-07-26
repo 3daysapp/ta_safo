@@ -13,13 +13,13 @@ class MauTempo {
   ///
   static List<MauTempo> parse(String html) {
     RegExp articleRegex = RegExp(
-      r"\<article.*>[\s\S]*<div.*>(<p>[\s\S]*</p>)[\s\S]*</div.*</article>",
+      r"\<article.*>[\s\S]*?(<p>[\s\S]*<\/p>)[\s\S]*<\/article>",
       caseSensitive: false,
       multiLine: true,
     );
 
     RegExp pRegex = RegExp(
-      r"\<p>([\s\S]*?)</p>",
+      r"\<p>([\s\S]*?)<\/p>",
       caseSensitive: false,
       multiLine: true,
     );
@@ -30,8 +30,14 @@ class MauTempo {
       multiLine: true,
     );
 
+    RegExp areaRegex = RegExp(
+      r"\<.*#ff0000[^>]*>(.*)<[^>]*>",
+      caseSensitive: false,
+      multiLine: true,
+    );
+
     RegExp numeroRegex = RegExp(
-      r"\<u><strong>(.*?)</strong></u>",
+      r"\<u>(.*?)<\/u>",
       caseSensitive: false,
       multiLine: true,
     );
@@ -48,12 +54,12 @@ class MauTempo {
       String area;
 
       pRegex.allMatches(match[1]).forEach((RegExpMatch match) {
-        if (match[1].startsWith('<span style="color:#ff0000;"><strong>')) {
+        if (match[1].contains(areaRegex)) {
           String tmpArea = match[1].replaceAll(clearTags, "");
           if (tmpArea != area) {
             area = tmpArea;
           }
-        } else if (match[1].startsWith("<u>")) {
+        } else if (match[1].contains(numeroRegex)) {
           if (area != null) {
             String numero = numeroRegex
                 .firstMatch(match[1])

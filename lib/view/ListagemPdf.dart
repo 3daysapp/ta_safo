@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
+import 'package:ta_safo/util/VisualUtil.dart';
 import 'package:ta_safo/view/TelaPdf.dart';
+import 'package:ta_safo/widget/DownloadTile.dart';
 
 ///
 ///
@@ -22,13 +20,14 @@ class ListagemPdf extends StatefulWidget {
 ///
 class _ListagemPdfState extends State<ListagemPdf> {
   StreamController _streamController;
+  String _url;
 
   ///
   ///
   ///
   @override
   void initState() {
-    _streamController = new StreamController();
+    _streamController = StreamController();
     super.initState();
   }
 
@@ -38,6 +37,8 @@ class _ListagemPdfState extends State<ListagemPdf> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+
+    _url = args['url'];
 
     final RegExp getLinks = RegExp(
       args['regexp'],
@@ -50,26 +51,26 @@ class _ListagemPdfState extends State<ListagemPdf> {
       caseSensitive: false,
     );
 
-    _loadData(args['url']);
+    _loadData();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(args['title']),
       ),
       body: StreamBuilder(
-          stream: _streamController.stream,
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.hasData) {
-              List<Widget> items = [];
+        stream: _streamController.stream,
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            List<DownloadTile> items = [];
 
-              // TODO: Ordenar resultados.
-
-              getLinks.allMatches(snapshot.data).forEach((match) {
+            getLinks.allMatches(snapshot.data).forEach(
+              (match) {
                 String url = match.namedGroup('link');
 
-                String filename = '??';
+                String filename;
                 String folheto;
-                String ano = '??';
+                String ano;
+                String subtitle;
 
                 RegExpMatch matchUrl = getName.firstMatch(url);
 
@@ -79,82 +80,90 @@ class _ListagemPdfState extends State<ListagemPdf> {
                   ano = matchUrl[2];
                 }
 
-                String content = match.namedGroup('content').trim();
-
-                Text subtitle;
-                if (match.groupNames.contains('title')) {
-                  subtitle = Text(match.namedGroup('title'));
+                if (folheto == null || folheto.isEmpty) {
+                  if (match.groupNames.contains('content')) {
+                    folheto = match.namedGroup('content').trim();
+                  }
                 }
 
-                items.add(ListTile(
-                  leading: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.file_download),
-                    ],
-                  ),
-                  title: Text('$ano - ${folheto ?? content}'),
+                if (match.groupNames.contains('title')) {
+                  subtitle = match.namedGroup('title');
+                }
+
+                items.add(DownloadTile(
+                  url: url,
+                  localFilename: filename,
+                  title: "$ano - $folheto",
                   subtitle: subtitle,
-                  onTap: () {
-                    _showPdf(url: url, filename: filename);
-                  },
+                  tapCallback: _showPdf,
                 ));
-              });
+              },
+            );
 
-              if (items.isEmpty) {
-                return Center(
-                  child: Text(
-                    'Nenhuma informação encontrada.',
-                    style: Theme.of(context).textTheme.body2,
-                  ),
-                );
-              }
-
-              return ListView.separated(
-                itemBuilder: (BuildContext context, int index) =>
-                    items.elementAt(index),
-                separatorBuilder: (BuildContext context, int index) =>
-                    Divider(),
-                itemCount: items.length,
-              );
-            }
-
-            if (snapshot.hasError) {
-              // TODO: Adicionar botão de Tentar Novamente.
+            if (items.isEmpty) {
               return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'Não foi possível obter as informações.',
-                      style: Theme.of(context).textTheme.body2,
-                    ),
-                  ],
+                child: Text(
+                  'Nenhuma informação encontrada.',
+                  style: Theme.of(context).textTheme.body2,
                 ),
               );
             }
 
-            return Center(
-              child: CircularProgressIndicator(),
+            items.sort(
+              (a, b) => (b.title).compareTo(a.title),
             );
-          }),
+
+            return ListView.separated(
+              itemBuilder: (BuildContext context, int index) {
+                return items.elementAt(index);
+              },
+              separatorBuilder: (BuildContext context, int index) => Divider(),
+              itemCount: items.length,
+            );
+          }
+
+          if (snapshot.hasError) {
+            return TryAgain(
+              error: snapshot.error,
+              callback: _loadData,
+            );
+          }
+
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
     );
   }
 
   ///
   ///
   ///
-  Future<String> _getData(String url) async {
-    var client = new http.Client();
+  void _loadData() async {
+    _streamController.add(null);
+    _getData().then((data) {
+      _streamController.add(data);
+    }).catchError((error) {
+      print(error);
+      // TODO: Disparar crash.
+      _streamController.addError(error);
+    });
+  }
+
+  ///
+  ///
+  ///
+  Future<String> _getData() async {
+    var client = http.Client();
 
     String data = "";
 
     http.Response response =
-        await client.get(url).timeout(Duration(seconds: 10));
+        await client.get(_url).timeout(Duration(seconds: 10));
 
     if (response.statusCode != 200) {
-      throw Exception("$url - Status Code: ${response.statusCode}");
+      throw Exception("$_url - Status Code: ${response.statusCode}");
     }
 
     // TODO: Armazenar informações caso fique offline?
@@ -169,52 +178,17 @@ class _ListagemPdfState extends State<ListagemPdf> {
   ///
   ///
   ///
-  void _loadData(String url) async {
-    _streamController.add(null);
-    _getData(url).then((data) {
-      _streamController.add(data);
-    }).catchError((error) {
-      print(error);
+  void _showPdf(String path) {
+    if (path == null) {
       // TODO: Disparar crash.
-      _streamController.addError(error);
-    });
-  }
-
-  ///
-  ///
-  ///
-  void _showPdf({final String url, final String filename}) {
-    // TODO: Exibir tela Aguarde...
-    // TODO: Quando cancelar um download?
-    // TODO: Mostrar os arquivos que já foram baixados.
-    _createFileOfPdfUrl(url).then((path) {
+    } else {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => TelaPdf(
             path: path,
-            filename: filename,
           ),
         ),
       );
-    }).catchError(
-      (error) => print(error),
-    );
-  }
-
-  ///
-  ///
-  ///
-  Future<String> _createFileOfPdfUrl(String url) async {
-    final filename = url.substring(url.lastIndexOf("/") + 1);
-    var request = await HttpClient().getUrl(Uri.parse(url));
-    var response = await request.close();
-    var bytes = await consolidateHttpClientResponseBytes(response,
-        onBytesReceived: (int received, int length) {
-      print('$received / $length');
-    });
-    String dir = (await getTemporaryDirectory()).path;
-    File file = new File('$dir/$filename');
-    await file.writeAsBytes(bytes);
-    return file.path;
+    }
   }
 }

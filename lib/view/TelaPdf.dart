@@ -1,28 +1,31 @@
 import 'dart:async';
 
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 class TelaPdf extends StatefulWidget {
   final String path;
-  final String filename;
 
-  TelaPdf({Key key, this.path, this.filename}) : super(key: key);
+  TelaPdf({Key key, this.path}) : super(key: key);
 
   _TelaPdfState createState() => _TelaPdfState();
 }
 
 class _TelaPdfState extends State<TelaPdf> {
   final Completer<PDFViewController> _controller =
-  Completer<PDFViewController>();
+      Completer<PDFViewController>();
+
   int pages = 0;
   bool isReady = false;
 
   @override
   Widget build(BuildContext context) {
+    final String filename = p.basename(widget.path);
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.filename),
+        title: Text(filename),
       ),
       body: Stack(
         children: <Widget>[
@@ -53,8 +56,8 @@ class _TelaPdfState extends State<TelaPdf> {
           ),
           !isReady
               ? Center(
-            child: CircularProgressIndicator(),
-          )
+                  child: CircularProgressIndicator(),
+                )
               : Container()
         ],
       ),

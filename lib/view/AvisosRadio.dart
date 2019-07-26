@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:ta_safo/util/Geo.dart';
+import 'package:ta_safo/util/VisualUtil.dart';
 import 'package:ta_safo/view/AvisosRadioMapa.dart';
 
 ///
@@ -65,9 +66,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
           IconButton(
             key: Key('refreshIconButton'),
             icon: Icon(FontAwesomeIcons.sync),
-            onPressed: () {
-              _loadData(tipo: _filtroTipo);
-            },
+            onPressed: _refresh,
           ),
         ],
       ),
@@ -148,8 +147,9 @@ class _AvisosRadioState extends State<AvisosRadio> {
                         subtitle: Text(aviso['textoPT']),
                         trailing:
                             geos.isNotEmpty ? Icon(FontAwesomeIcons.map) : null,
-                        onTap:
-                            geos.isNotEmpty ? () => _showGeometry(geos) : null,
+                        onTap: geos.isNotEmpty
+                            ? () => _showGeometry(aviso['numero'], geos)
+                            : null,
                       );
                     },
                   ),
@@ -157,14 +157,14 @@ class _AvisosRadioState extends State<AvisosRadio> {
               ],
             );
           }
+
           if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Não foi possível obter as informações.',
-                style: Theme.of(context).textTheme.body2,
-              ),
+            return TryAgain(
+              error: snapshot.error,
+              callback: _refresh,
             );
           }
+
           return Center(
             child: CircularProgressIndicator(),
           );
@@ -176,11 +176,36 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   ///
-  void _showGeometry(List<Map<String, dynamic>> geos) {
+  void _showGeometry(String title, List<Map<String, dynamic>> geos) {
     Navigator.of(context).pushNamed(
       AvisosRadioMapa.routeName,
-      arguments: geos,
+      arguments: {
+        'title': title,
+        'geos': geos,
+      },
     );
+  }
+
+  ///
+  ///
+  ///
+  void _refresh() {
+    _loadData(tipo: _filtroTipo);
+  }
+
+  ///
+  ///
+  ///
+  _loadData({TipoAviso tipo = TipoAviso.todos}) async {
+    _filtroTipo = tipo;
+    _streamController.add(null);
+    _getData().then((map) {
+      _streamController.add(map);
+    }).catchError((error) {
+      print(error);
+      // TODO: Disparar crash.
+      _streamController.addError(error);
+    });
   }
 
   ///
@@ -207,21 +232,6 @@ class _AvisosRadioState extends State<AvisosRadio> {
     data = json.decode(response.body);
     client.close();
     return data;
-  }
-
-  ///
-  ///
-  ///
-  _loadData({TipoAviso tipo = TipoAviso.todos}) async {
-    _filtroTipo = tipo;
-    _streamController.add(null);
-    _getData().then((map) {
-      _streamController.add(map);
-    }).catchError((error) {
-      print(error);
-      // TODO: Disparar crash.
-      _streamController.addError(error);
-    });
   }
 
   ///

@@ -22,14 +22,13 @@ class _AvisosRadioMapaState extends State<AvisosRadioMapa> {
   ///
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> args =
-        ModalRoute.of(context).settings.arguments;
+    final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Avisos-Rádio e SAR'),
+        title: Text(args['title']),
       ),
-      body: _processBody(args),
+      body: _processBody(args['geos']),
     );
   }
 
