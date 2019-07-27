@@ -16,16 +16,9 @@ dependencies:
   font_awesome_flutter: ^8.5.0
   http: ^0.12.0+2
   # shared_preferences: 0.5.3+4
-  # package_info: ^0.4.0+5
+  package_info: ^0.4.0+6
   path_provider: ^1.1.0
-  # device_info: ^0.4.0+2
-  ## Comentado para testes com o flutter_map
-  # cached_network_image: ^1.1.0
   url_launcher: ^5.1.0
-  ## https://pub.dev/packages/image_picker
-  ## https://pub.dev/packages/provider
-  ## https://pub.dev/packages/google_maps_flutter
-  # google_maps_flutter: ^0.5.19+2
   ## https://pub.dev/packages/flutter_map
   # flutter_map: ^0.6.1+2
   flutter_map:
@@ -33,14 +26,9 @@ dependencies:
       url: git://github.com/johnpryan/flutter_map.git
       ref: master
   # https://pub.dev/packages/firebase_crashlytics
-  firebase_crashlytics: ^0.0.4+11
+  firebase_crashlytics: ^0.1.0+1
   # https://pub.dev/packages/flutter_pdfview
   flutter_pdfview: ^1.0.0+7
-  # https://pub.dev/packages/flutter_full_pdf_viewer
-  # OK!
-  # flutter_full_pdf_viewer: ^1.0.4
-  # https://pub.dev/packages/audioplayers
-  audioplayers: ^0.13.1
   # https://pub.dev/packages/flutter_udid
   flutter_udid: ^1.0.0
 
@@ -51,7 +39,10 @@ dev_dependencies:
     sdk: flutter
   test: ^1.5.1
   flutter_launcher_icons: ^0.7.2+1
-  screenshots: ^1.2.0
+  screenshots: ^1.3.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/
+    - assets/images/

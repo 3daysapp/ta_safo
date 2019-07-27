@@ -1,1 +1,7 @@
-Avisos-Rádio Náuticos, Avisos de Mau Tempo
+Aplicativo sobre segurança da navegação com as funcionalidades:
+- Avisos-Rádio Náuticos e SAR
+- Avisos aos Navegantes
+  - Área marítima e Hidrovias em Geral
+  - Hidrovia Paraguai-Paraná
+  - Hidrovia Tietê-Paraná
+- Avisos de Mau Tempo

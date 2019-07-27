@@ -5,7 +5,6 @@ import 'package:ta_safo/view/AvisosRadio.dart';
 import 'package:ta_safo/view/AvisosRadioMapa.dart';
 import 'package:ta_safo/view/Home.dart';
 import 'package:ta_safo/view/ListagemPdf.dart';
-import 'package:ta_safo/view/PrevisaoTempo.dart';
 
 class Routes {
   static Map<String, WidgetBuilder> build(BuildContext context) {
@@ -16,7 +15,6 @@ class Routes {
       AvisosNavegantes.routeName: (_) => AvisosNavegantes(),
       AvisosMauTempo.routeName: (_) => AvisosMauTempo(),
       ListagemPdf.routeName: (_) => ListagemPdf(),
-      PrevisaoTempo.routeName: (_) => PrevisaoTempo(),
     };
   }
 }

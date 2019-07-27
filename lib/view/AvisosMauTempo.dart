@@ -20,8 +20,12 @@ class AvisosMauTempo extends StatefulWidget {
 ///
 class _AvisosMauTempoState extends State<AvisosMauTempo> {
   StreamController _streamController;
-  List<String> _areas = [];
-  String _filtroArea;
+  String _url = 'https://www.marinha.mil.br/chm/'
+      'dados-do-smm-avisos-de-mau-tempo/avisos-de-mau-tempo';
+
+  static const String noFilter = "TODAS";
+  String _filtroArea = noFilter;
+  List<String> _areas;
 
   ///
   ///
@@ -50,9 +54,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
           IconButton(
             key: Key('refreshIconButton'),
             icon: Icon(FontAwesomeIcons.sync),
-            onPressed: () {
-              _loadData(filtro: _filtroArea);
-            },
+            onPressed: _loadData,
           ),
         ],
       ),
@@ -61,8 +63,15 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             List<MauTempo> lista = MauTempo.parse(snapshot.data);
+            _areas = [noFilter];
 
-            if (_filtroArea != null) {
+            lista.forEach((aviso) {
+              if (!_areas.contains(aviso.area)) {
+                _areas.add(aviso.area);
+              }
+            });
+
+            if (_filtroArea != noFilter) {
               lista.retainWhere((aviso) => aviso.area == _filtroArea);
             }
 
@@ -95,7 +104,6 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
                   ),
                 );
                 area = item.area;
-                _areas.add(area);
               }
 
               listWidgets.add(
@@ -144,14 +152,11 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
 
     String data = "";
 
-    String url = 'https://www.marinha.mil.br/chm/'
-        'dados-do-smm-avisos-de-mau-tempo/avisos-de-mau-tempo';
-
     http.Response response =
-        await client.get(url).timeout(Duration(seconds: 10));
+        await client.get(_url).timeout(Duration(seconds: 10));
 
     if (response.statusCode != 200) {
-      throw Exception("$url - Status Code: ${response.statusCode}");
+      throw Exception("$_url - Status Code: ${response.statusCode}");
     }
 
     // TODO: Armazenar informações caso fique offline.
@@ -166,8 +171,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
   ///
   ///
   ///
-  void _loadData({String filtro}) async {
-    _filtroArea = filtro;
+  void _loadData() async {
     _streamController.add(null);
     _getData().then((data) {
       _streamController.add(data);
@@ -183,35 +187,46 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
   ///
   ListTile _getBottomSheetTile(String area, String label) {
     return ListTile(
-        title: Text(label),
-        leading: Icon(_filtroArea == area
-            ? FontAwesomeIcons.checkCircle
-            : FontAwesomeIcons.circle),
-        dense: true,
-        onTap: () {
-          Navigator.of(context).pop();
-          _loadData(filtro: area);
-        });
+      title: Text(label),
+      leading: Icon(_filtroArea == area
+          ? FontAwesomeIcons.checkCircle
+          : FontAwesomeIcons.circle),
+      dense: true,
+      onTap: () {
+        _filtroArea = area;
+        _loadData();
+        Navigator.of(context).pop();
+      },
+    );
   }
 
   ///
   ///
   ///
   void _settingModalBottomSheet(context) {
-    List<Widget> items = [];
-
-    items.add(_getBottomSheetTile(null, "TODAS"));
-
-    items.addAll(
-      _areas.map((area) => _getBottomSheetTile(area, area)).toList(),
-    );
-
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Container(
           child: ListView(
-            children: items,
+            children: _areas
+                .map(
+                  (area) => ListTile(
+                    title: Text(area),
+                    leading: Icon(
+                      _filtroArea == area
+                          ? FontAwesomeIcons.checkCircle
+                          : FontAwesomeIcons.circle,
+                    ),
+                    dense: true,
+                    onTap: () {
+                      _filtroArea = area;
+                      _loadData();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                )
+                .toList(),
           ),
         );
       },

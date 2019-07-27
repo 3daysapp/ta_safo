@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ta_safo/routes.dart';
 import 'package:ta_safo/view/Home.dart';
@@ -9,15 +11,17 @@ import 'package:flutter_udid/flutter_udid.dart';
 ///
 void main() {
   bool debug = false;
+
   assert(debug = true);
+
   if (!debug) {
     Crashlytics.instance.enableInDevMode = false;
-    FlutterError.onError = (FlutterErrorDetails details) {
-      Crashlytics.instance.onError(details);
-    };
+    FlutterError.onError = Crashlytics.instance.recordFlutterError;
   }
 
-  runApp(TaSafo());
+  runZoned<Future<void>>(() async {
+    runApp(TaSafo());
+  }, onError: Crashlytics.instance.recordError);
 }
 
 ///

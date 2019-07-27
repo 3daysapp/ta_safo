@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ta_safo/view/AvisosMauTempo.dart';
 import 'package:ta_safo/view/AvisosNavegantes.dart';
 import 'package:ta_safo/view/AvisosRadio.dart';
-//import 'package:ta_safo/view/PrevisaoTempo.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info/package_info.dart';
 
 ///
 ///
@@ -19,6 +19,14 @@ class Home extends StatefulWidget {
 ///
 ///
 class _HomeState extends State<Home> {
+  bool debug = false;
+
+  @override
+  void initState() {
+    super.initState();
+    assert(debug = true);
+  }
+
   ///
   ///
   ///
@@ -42,11 +50,6 @@ class _HomeState extends State<Home> {
         'route': AvisosMauTempo.routeName,
         'key': 'avisosDeMauTempo',
       },
-//      {
-//        'label': 'Previsão\ndo Tempo',
-//        'route': PrevisaoTempo.routeName,
-//        'key': 'previsaoDoTempo',
-//      },
     ];
 
     List<Map<String, String>> links = [
@@ -62,22 +65,12 @@ class _HomeState extends State<Home> {
         'label': 'Centro de Hidrografia da Marinha',
         'url': 'https://www.marinha.mil.br/chm/',
       },
-//      {
-//        'label': 'Serviço Móvel Marítimo',
-//        'url': 'http://portal.embratel.com.br/movelmaritimo/'
-//      }
     ];
 
     return Scaffold(
       key: Key('homeScaffold'),
       appBar: AppBar(
         title: Text('Tá Safo'),
-//        actions: <Widget>[
-//          IconButton(
-//            icon: Icon(Icons.bug_report),
-//            onPressed: _testMap,
-//          )
-//        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -147,16 +140,10 @@ class _HomeState extends State<Home> {
 
     list.add(UserAccountsDrawerHeader(
       accountName: Text('Tá Safo'),
-      accountEmail: null,
+      accountEmail: Text('www.3daysapp.com.br'),
       currentAccountPicture: CircleAvatar(
-        backgroundColor: Colors.black45,
-        child: Text(
-          'TS',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 38.0,
-          ),
-        ),
+        backgroundImage: AssetImage('assets/images/ic_launcher.png'),
+        backgroundColor: Colors.transparent,
       ),
     ));
 
@@ -183,6 +170,26 @@ class _HomeState extends State<Home> {
         )
         .toList());
 
+    if (!debug) {
+      list.add(
+        StreamBuilder(
+          stream: PackageInfo.fromPlatform().asStream(),
+          builder: (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
+            if (snapshot.hasData) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Versão: ${snapshot.data.version}',
+                  textAlign: TextAlign.right,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              );
+            }
+            return Text('');
+          },
+        ),
+      );
+    }
     return list;
   }
 

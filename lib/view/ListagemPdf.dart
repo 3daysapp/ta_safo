@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:ta_safo/util/VisualUtil.dart';
 import 'package:ta_safo/view/TelaPdf.dart';
@@ -21,6 +22,10 @@ class ListagemPdf extends StatefulWidget {
 class _ListagemPdfState extends State<ListagemPdf> {
   StreamController _streamController;
   String _url;
+
+  static const String noFilter = "TODOS";
+  String _filtroAno = noFilter;
+  List<String> _anos;
 
   ///
   ///
@@ -56,12 +61,25 @@ class _ListagemPdfState extends State<ListagemPdf> {
     return Scaffold(
       appBar: AppBar(
         title: Text(args['title']),
+        actions: <Widget>[
+          IconButton(
+            key: Key('filterIconButton'),
+            icon: Icon(FontAwesomeIcons.filter),
+            onPressed: () => _settingModalBottomSheet(context),
+          ),
+          IconButton(
+            key: Key('refreshIconButton'),
+            icon: Icon(FontAwesomeIcons.sync),
+            onPressed: _loadData,
+          ),
+        ],
       ),
       body: StreamBuilder(
         stream: _streamController.stream,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             List<DownloadTile> items = [];
+            _anos = [noFilter];
 
             getLinks.allMatches(snapshot.data).forEach(
               (match) {
@@ -90,13 +108,21 @@ class _ListagemPdfState extends State<ListagemPdf> {
                   subtitle = match.namedGroup('title');
                 }
 
-                items.add(DownloadTile(
-                  url: url,
-                  localFilename: filename,
-                  title: "$ano - $folheto",
-                  subtitle: subtitle,
-                  tapCallback: _showPdf,
-                ));
+                if (!_anos.contains(ano)) {
+                  _anos.add(ano);
+                }
+
+                if (_filtroAno == noFilter || _filtroAno == ano) {
+                  items.add(
+                    DownloadTile(
+                      url: url,
+                      localFilename: filename,
+                      title: "$ano - $folheto",
+                      subtitle: subtitle,
+                      tapCallback: _showPdf,
+                    ),
+                  );
+                }
               },
             );
 
@@ -190,5 +216,39 @@ class _ListagemPdfState extends State<ListagemPdf> {
         ),
       );
     }
+  }
+
+  ///
+  ///
+  ///
+  void _settingModalBottomSheet(context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          child: ListView(
+            children: _anos
+                .map(
+                  (ano) => ListTile(
+                    key: Key('ano${ano}Tile'),
+                    title: Text(ano),
+                    leading: Icon(
+                      _filtroAno == ano
+                          ? FontAwesomeIcons.checkCircle
+                          : FontAwesomeIcons.circle,
+                    ),
+                    dense: true,
+                    onTap: () {
+                      _filtroAno = ano;
+                      _loadData();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                )
+                .toList(),
+          ),
+        );
+      },
+    );
   }
 }

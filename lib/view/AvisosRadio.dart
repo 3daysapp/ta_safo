@@ -37,6 +37,9 @@ class AvisosRadio extends StatefulWidget {
 ///
 class _AvisosRadioState extends State<AvisosRadio> {
   StreamController _streamController;
+  String _url = 'https://www.marinha.mil.br/chm/sites/'
+      'www.marinha.mil.br.chm/files/opt/avradio.json';
+
   TipoAviso _filtroTipo = TipoAviso.todos;
 
   ///
@@ -66,7 +69,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
           IconButton(
             key: Key('refreshIconButton'),
             icon: Icon(FontAwesomeIcons.sync),
-            onPressed: _refresh,
+            onPressed: _loadData,
           ),
         ],
       ),
@@ -161,7 +164,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
           if (snapshot.hasError) {
             return TryAgain(
               error: snapshot.error,
-              callback: _refresh,
+              callback: _loadData,
             );
           }
 
@@ -189,15 +192,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   ///
-  void _refresh() {
-    _loadData(tipo: _filtroTipo);
-  }
-
-  ///
-  ///
-  ///
-  _loadData({TipoAviso tipo = TipoAviso.todos}) async {
-    _filtroTipo = tipo;
+  _loadData() async {
     _streamController.add(null);
     _getData().then((map) {
       _streamController.add(map);
@@ -216,14 +211,11 @@ class _AvisosRadioState extends State<AvisosRadio> {
 
     Map data = {};
 
-    String url = 'https://www.marinha.mil.br/chm/sites/'
-        'www.marinha.mil.br.chm/files/opt/avradio.json';
-
     http.Response response =
-        await client.get(url).timeout(Duration(seconds: 10));
+        await client.get(_url).timeout(Duration(seconds: 10));
 
     if (response.statusCode != 200) {
-      throw Exception("$url - Status Code: ${response.statusCode}");
+      throw Exception("$_url - Status Code: ${response.statusCode}");
     }
 
     // TODO: User cloud storage para cache.
@@ -241,13 +233,16 @@ class _AvisosRadioState extends State<AvisosRadio> {
     return ListTile(
       key: Key('${tipo.toString()}Tile'),
       title: Text(label),
-      leading: Icon(_filtroTipo == tipo
-          ? FontAwesomeIcons.checkCircle
-          : FontAwesomeIcons.circle),
+      leading: Icon(
+        _filtroTipo == tipo
+            ? FontAwesomeIcons.checkCircle
+            : FontAwesomeIcons.circle,
+      ),
       dense: true,
       onTap: () {
+        _filtroTipo = tipo;
+        _loadData();
         Navigator.of(context).pop();
-        _loadData(tipo: tipo);
       },
     );
   }

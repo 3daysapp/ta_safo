@@ -125,7 +125,7 @@ class _DownloadTileState extends State<DownloadTile> {
             PopupMenuDivider(),
             _getPopupItem(
               PopupOperation.delete_file,
-              'Excluir Arquivo',
+              'Excluir Download',
               Icons.delete,
             ),
           ];
