@@ -12,6 +12,7 @@ void main() {
   group('end-to-end-test', () {
     FlutterDriver driver;
     final Map config = Config().configInfo;
+    int _count = 0;
 
     ///
     ///
@@ -36,11 +37,11 @@ void main() {
 
       await driver.waitFor(homeDrawer);
 
-      await screenshot(driver, config, '0');
+      await screenshot(driver, config, (_count++).toString());
 
       await driver.tap(homeDrawer);
 
-      await screenshot(driver, config, '1');
+      await screenshot(driver, config, (_count++).toString());
     }, timeout: Timeout(Duration(seconds: 30)));
 
     ///
@@ -60,7 +61,7 @@ void main() {
 
       await driver.waitFor(atualizadoText);
 
-      await screenshot(driver, config, '2');
+      await screenshot(driver, config, (_count++).toString());
     }, timeout: Timeout(Duration(seconds: 30)));
 
     ///
@@ -78,17 +79,30 @@ void main() {
 
       await driver.waitFor(tipoAvisoSarTile);
 
-      await screenshot(driver, config, '3');
+      await screenshot(driver, config, (_count++).toString());
 
       await driver.tap(tipoAvisoSarTile);
 
       SerializableFinder atualizadoText = find.byValueKey('atualizadoText');
 
       await driver.waitFor(atualizadoText);
-
     }, timeout: Timeout(Duration(seconds: 30)));
 
-    // TODO: Teste de reload.
+    ///
+    ///
+    ///
+    test('Avisos-Rádio Náuticos Refresh Test', () async {
+      SerializableFinder refreshIconButton =
+          find.byValueKey('refreshIconButton');
+
+      await driver.waitFor(refreshIconButton);
+
+      await driver.tap(refreshIconButton);
+
+      SerializableFinder atualizadoText = find.byValueKey('atualizadoText');
+
+      await driver.waitFor(atualizadoText);
+    }, timeout: Timeout(Duration(seconds: 30)));
 
     ///
     ///
@@ -120,17 +134,106 @@ void main() {
 
       await driver.tap(avisosAosNavegantesButton);
 
-      await screenshot(driver, config, '4');
-
-      SerializableFinder pageBack = find.pageBack();
-
-      await driver.tap(pageBack);
+      await screenshot(driver, config, (_count++).toString());
     }, timeout: Timeout(Duration(seconds: 30)));
 
-    // TODO: Explorar os avisos aos navegantes. Não tirar print.
-    // TODO: areaMaritimaHidroviasGeral
-    // TODO: hidroviaParaguaiParana
-    // TODO: hidroviaTieteParana
+    ///
+    ///
+    ///
+    List<Map<String, dynamic>> confs = [
+      {
+        'name': 'Área Marítima',
+        'key': 'areaMaritimaHidroviasGeralButton',
+        'capture': true,
+      },
+      {
+        'name': 'Paraguai-Paraná',
+        'key': 'hidroviaParaguaiParanaButton',
+        'capture': false,
+      },
+      {
+        'name': 'Tietê-Paraná',
+        'key': 'hidroviaTieteParanaButton',
+        'capture': false,
+      },
+    ];
+
+    confs.forEach((conf) {
+      ///
+      ///
+      ///
+      test('Avisos aos Navegantes ${conf['name']} Test', () async {
+        SerializableFinder button = find.byValueKey(conf['key']);
+
+        await driver.scrollIntoView(button);
+
+        await driver.waitFor(button);
+
+        await driver.tap(button);
+
+        SerializableFinder atualizadoText = find.byValueKey('atualizadoText');
+
+        await driver.waitFor(atualizadoText);
+
+        if (conf['capture']) {
+          await screenshot(driver, config, (_count++).toString());
+        }
+      }, timeout: Timeout(Duration(seconds: 30)));
+
+      ///
+      ///
+      ///
+      test('Avisos aos Navegantes ${conf['name']} Filter Test', () async {
+        SerializableFinder filterIconButton =
+            find.byValueKey('filterIconButton');
+
+        await driver.waitFor(filterIconButton);
+
+        await driver.tap(filterIconButton);
+
+        SerializableFinder filterTile = find.byValueKey('ano2019Tile');
+
+        await driver.waitFor(filterTile);
+
+        await driver.tap(filterTile);
+
+        SerializableFinder atualizadoText = find.byValueKey('atualizadoText');
+
+        await driver.waitFor(atualizadoText);
+      }, timeout: Timeout(Duration(seconds: 30)));
+
+      ///
+      ///
+      ///
+      test('Avisos aos Navegantes ${conf['name']} Refresh Test', () async {
+        SerializableFinder refreshIconButton =
+            find.byValueKey('refreshIconButton');
+
+        await driver.waitFor(refreshIconButton);
+
+        await driver.tap(refreshIconButton);
+
+        SerializableFinder atualizadoText = find.byValueKey('atualizadoText');
+
+        await driver.waitFor(atualizadoText);
+      }, timeout: Timeout(Duration(seconds: 30)));
+
+      ///
+      ///
+      ///
+      test('Avisos aos Navegantes ${conf['name']} Page Back Test', () async {
+        SerializableFinder pageBack = find.pageBack();
+        await driver.tap(pageBack);
+      }, timeout: Timeout(Duration(seconds: 30)));
+    });
+
+    ///
+    ///
+    ///
+    test('Avisos aos Navegantes Page Back Test', () async {
+      SerializableFinder pageBack = find.pageBack();
+      await driver.tap(pageBack);
+    }, timeout: Timeout(Duration(seconds: 30)));
 
     ///
     ///
@@ -145,16 +248,56 @@ void main() {
 
       await driver.tap(avisosDeMauTempoButton);
 
-      // FIXME: Esperar a tela carregar os dados.
-      await screenshot(driver, config, '5');
+      SerializableFinder atualizadoText = find.byValueKey('atualizadoText');
 
-      SerializableFinder pageBack = find.pageBack();
+      await driver.waitFor(atualizadoText);
 
-      await driver.tap(pageBack);
+      await screenshot(driver, config, (_count++).toString());
     }, timeout: Timeout(Duration(seconds: 30)));
 
-    // TODO: Teste com filtro.
+    ///
+    ///
+    ///
+    test('Avisos de Mau Tempo Filter Test', () async {
+      SerializableFinder filterIconButton = find.byValueKey('filterIconButton');
 
-    // TODO: Teste de reload.
+      await driver.waitFor(filterIconButton);
+
+      await driver.tap(filterIconButton);
+
+      SerializableFinder filterTile = find.byValueKey('TODASTile');
+
+      await driver.waitFor(filterTile);
+
+      await driver.tap(filterTile);
+
+      SerializableFinder atualizadoText = find.byValueKey('atualizadoText');
+
+      await driver.waitFor(atualizadoText);
+    }, timeout: Timeout(Duration(seconds: 30)));
+
+    ///
+    ///
+    ///
+    test('Avisos de Mau Tempo Refresh Test', () async {
+      SerializableFinder refreshIconButton =
+          find.byValueKey('refreshIconButton');
+
+      await driver.waitFor(refreshIconButton);
+
+      await driver.tap(refreshIconButton);
+
+      SerializableFinder atualizadoText = find.byValueKey('atualizadoText');
+
+      await driver.waitFor(atualizadoText);
+    }, timeout: Timeout(Duration(seconds: 30)));
+
+    ///
+    ///
+    ///
+    test('Avisos de Mau Tempo Page Back Test', () async {
+      SerializableFinder pageBack = find.pageBack();
+      await driver.tap(pageBack);
+    }, timeout: Timeout(Duration(seconds: 30)));
   });
 }

@@ -19,7 +19,7 @@ class AvisosMauTempo extends StatefulWidget {
 ///
 ///
 class _AvisosMauTempoState extends State<AvisosMauTempo> {
-  StreamController _streamController;
+  StreamController<String> _streamController;
   String _url = 'https://www.marinha.mil.br/chm/'
       'dados-do-smm-avisos-de-mau-tempo/avisos-de-mau-tempo';
 
@@ -32,7 +32,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
   ///
   @override
   void initState() {
-    _streamController = new StreamController();
+    _streamController = StreamController();
     _loadData();
     super.initState();
   }
@@ -60,7 +60,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
       ),
       body: StreamBuilder(
         stream: _streamController.stream,
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             List<MauTempo> lista = MauTempo.parse(snapshot.data);
             _areas = [noFilter];
@@ -123,8 +123,43 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
               child: Text(''),
             ));
 
-            return ListView(
-              children: listWidgets,
+            DateTime now = DateTime.now().toUtc();
+
+            String data = now.day.toString().padLeft(2, '0') +
+                '/' +
+                now.month.toString().padLeft(2, '0') +
+                '/' +
+                now.year.toString() +
+                " " +
+                now.hour.toString().padLeft(2, '0') +
+                ':' +
+                now.minute.toString().padLeft(2, '0');
+
+            return Column(
+              children: <Widget>[
+                SizedBox(
+                  width: double.infinity,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Text(
+                          'Verificado às $data UTC',
+                          key: Key('atualizadoText'),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    children: listWidgets,
+                  ),
+                ),
+              ],
             );
           }
           if (snapshot.hasError) {
@@ -185,24 +220,6 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
   ///
   ///
   ///
-  ListTile _getBottomSheetTile(String area, String label) {
-    return ListTile(
-      title: Text(label),
-      leading: Icon(_filtroArea == area
-          ? FontAwesomeIcons.checkCircle
-          : FontAwesomeIcons.circle),
-      dense: true,
-      onTap: () {
-        _filtroArea = area;
-        _loadData();
-        Navigator.of(context).pop();
-      },
-    );
-  }
-
-  ///
-  ///
-  ///
   void _settingModalBottomSheet(context) {
     showModalBottomSheet(
       context: context,
@@ -212,6 +229,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
             children: _areas
                 .map(
                   (area) => ListTile(
+                    key: Key('${area}Tile'),
                     title: Text(area),
                     leading: Icon(
                       _filtroArea == area

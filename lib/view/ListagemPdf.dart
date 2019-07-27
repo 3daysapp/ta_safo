@@ -139,12 +139,45 @@ class _ListagemPdfState extends State<ListagemPdf> {
               (a, b) => (b.title).compareTo(a.title),
             );
 
-            return ListView.separated(
-              itemBuilder: (BuildContext context, int index) {
-                return items.elementAt(index);
-              },
-              separatorBuilder: (BuildContext context, int index) => Divider(),
-              itemCount: items.length,
+            DateTime now = DateTime.now().toUtc();
+
+            String data = now.day.toString().padLeft(2, '0') +
+                '/' +
+                now.month.toString().padLeft(2, '0') +
+                '/' +
+                now.year.toString() +
+                " " +
+                now.hour.toString().padLeft(2, '0') +
+                ':' +
+                now.minute.toString().padLeft(2, '0');
+
+            return Column(
+              children: <Widget>[
+                SizedBox(
+                  width: double.infinity,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Text(
+                          'Verificado às $data UTC',
+                          key: Key('atualizadoText'),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    itemBuilder: (context, index) => items.elementAt(index),
+                    separatorBuilder: (context, index) => Divider(),
+                    itemCount: items.length,
+                  ),
+                ),
+              ],
             );
           }
 
