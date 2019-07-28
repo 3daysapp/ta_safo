@@ -14,14 +14,16 @@ void main() {
 
   assert(debug = true);
 
-  if (!debug) {
+  if (debug) {
+    runApp(TaSafo());
+  } else {
     Crashlytics.instance.enableInDevMode = false;
     FlutterError.onError = Crashlytics.instance.recordFlutterError;
-  }
 
-  runZoned<Future<void>>(() async {
-    runApp(TaSafo());
-  }, onError: Crashlytics.instance.recordError);
+    runZoned<Future<void>>(() async {
+      runApp(TaSafo());
+    }, onError: Crashlytics.instance.recordError);
+  }
 }
 
 ///
