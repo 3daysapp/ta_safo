@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ta_safo/view/AvisosMauTempo.dart';
 import 'package:ta_safo/view/AvisosNavegantes.dart';
 import 'package:ta_safo/view/AvisosRadio.dart';
+import 'package:ta_safo/view/Configuracoes.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:package_info/package_info.dart';
 
 ///
 ///
@@ -160,6 +160,15 @@ class _HomeState extends State<Home> {
 
     list.add(Divider());
 
+    list.add(Padding(
+      padding: const EdgeInsets.only(left: 16.0),
+      child: Text(
+        'Links Externos',
+        textAlign: TextAlign.left,
+        style: Theme.of(context).textTheme.caption,
+      ),
+    ));
+
     list.addAll(links
         .map(
           (link) => ListTile(
@@ -170,26 +179,17 @@ class _HomeState extends State<Home> {
         )
         .toList());
 
-    if (!debug) {
-      list.add(
-        StreamBuilder(
-          stream: PackageInfo.fromPlatform().asStream(),
-          builder: (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
-            if (snapshot.hasData) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Versão: ${snapshot.data.version}',
-                  textAlign: TextAlign.right,
-                  style: Theme.of(context).textTheme.caption,
-                ),
-              );
-            }
-            return Text('');
-          },
-        ),
-      );
-    }
+    list.add(Divider());
+
+    list.add(
+      ListTile(
+        leading: Icon(Icons.settings),
+        title: Text('Configurações do App'),
+        onTap: () =>
+            Navigator.of(context).popAndPushNamed(Configuracoes.routeName),
+      ),
+    );
+
     return list;
   }
 
