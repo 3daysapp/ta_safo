@@ -26,7 +26,7 @@ dependencies:
       url: git://github.com/johnpryan/flutter_map.git
       ref: master
   # https://pub.dev/packages/firebase_crashlytics
-  firebase_crashlytics: ^0.1.0+1
+  firebase_crashlytics: ^0.1.0+2
   # https://pub.dev/packages/flutter_pdfview
   flutter_pdfview: ^1.0.0+7
   # https://pub.dev/packages/flutter_udid
