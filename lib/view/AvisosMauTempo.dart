@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:ta_safo/util/MauTempo.dart';
+import 'package:ta_safo/util/MetricHttpClient.dart';
 
 ///
 ///
@@ -183,12 +184,11 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
   ///
   ///
   Future<String> _getData() async {
-    var client = new http.Client();
+    MetricHttpClient client = MetricHttpClient(Client());
 
     String data = "";
 
-    http.Response response =
-        await client.get(_url).timeout(Duration(seconds: 10));
+    Response response = await client.get(_url).timeout(Duration(seconds: 10));
 
     if (response.statusCode != 200) {
       throw Exception("$_url - Status Code: ${response.statusCode}");

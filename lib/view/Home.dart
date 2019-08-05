@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:ta_safo/util/Config.dart';
 import 'package:ta_safo/view/AvisosMauTempo.dart';
 import 'package:ta_safo/view/AvisosNavegantes.dart';
 import 'package:ta_safo/view/AvisosRadio.dart';
@@ -19,13 +23,7 @@ class Home extends StatefulWidget {
 ///
 ///
 class _HomeState extends State<Home> {
-  bool debug = false;
-
-  @override
-  void initState() {
-    super.initState();
-    assert(debug = true);
-  }
+  Config config = Config();
 
   ///
   ///
@@ -52,80 +50,85 @@ class _HomeState extends State<Home> {
       },
     ];
 
-    List<Map<String, String>> links = [
-      {
-        'label': 'Marinha do Brasil',
-        'url': 'https://www.marinha.mil.br/',
-      },
-      {
-        'label': 'Diretoria de Hidrografia e Navegação',
-        'url': 'https://www.marinha.mil.br/dhn/',
-      },
-      {
-        'label': 'Centro de Hidrografia da Marinha',
-        'url': 'https://www.marinha.mil.br/chm/',
-      },
-    ];
+    return StreamBuilder<RemoteConfig>(
+        stream: setupRemoteConfig().asStream(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            config.remoteConfig = snapshot.data;
 
-    return Scaffold(
-      key: Key('homeScaffold'),
-      appBar: AppBar(
-        title: Text('Tá Safo'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: _drawerData(
-            context: context,
-            buttons: buttons,
-            links: links,
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.count(
-          crossAxisCount: width >= 1024 ? width ~/ 200 : 2,
-          children: buttons
-              .map(
-                (button) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black54, width: 1.0),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(8),
-                      ),
-                    ),
-                    child: FlatButton(
-                      key: Key('${button['key']}Button'),
-                      splashColor: Colors.green,
-                      onPressed: () =>
-                          Navigator.of(context).pushNamed(button['route']),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12.0),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: Text(
-                                button['label'],
-                                textAlign: TextAlign.end,
+            return Scaffold(
+              key: Key('homeScaffold'),
+              appBar: AppBar(
+                title: Text('Tá Safo'),
+              ),
+              drawer: Drawer(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: _drawerData(
+                    context: context,
+                    buttons: buttons,
+                  ),
+                ),
+              ),
+              body: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.count(
+                  crossAxisCount: width >= 1024 ? width ~/ 200 : 2,
+                  children: buttons
+                      .map(
+                        (button) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              border:
+                                  Border.all(color: Colors.black54, width: 1.0),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
+                            ),
+                            child: FlatButton(
+                              key: Key('${button['key']}Button'),
+                              splashColor: Colors.green,
+                              onPressed: () => Navigator.of(context)
+                                  .pushNamed(button['route']),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12.0),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      child: Text(
+                                        button['label'],
+                                        textAlign: TextAlign.end,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
+                        ),
+                      )
+                      .toList(),
                 ),
-              )
-              .toList(),
-        ),
-      ),
-    );
+              ),
+            );
+          }
+
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Tá Safo'),
+            ),
+            body: Container(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        });
   }
 
   ///
@@ -134,7 +137,6 @@ class _HomeState extends State<Home> {
   List<Widget> _drawerData({
     BuildContext context,
     List<Map<String, dynamic>> buttons,
-    List<Map<String, dynamic>> links,
   }) {
     List<Widget> list = [];
 
@@ -160,6 +162,17 @@ class _HomeState extends State<Home> {
 
     list.add(Divider());
 
+    list.add(
+      ListTile(
+        leading: Icon(Icons.settings),
+        title: Text('Configurações do App'),
+        onTap: () =>
+            Navigator.of(context).popAndPushNamed(Configuracoes.routeName),
+      ),
+    );
+
+    list.add(Divider());
+
     list.add(Padding(
       padding: const EdgeInsets.only(left: 16.0),
       child: Text(
@@ -168,6 +181,11 @@ class _HomeState extends State<Home> {
         style: Theme.of(context).textTheme.caption,
       ),
     ));
+
+    Map<String, dynamic> link =
+        json.decode(config.remoteConfig.getString('links'));
+
+    List<dynamic> links = link['links'];
 
     list.addAll(links
         .map(
@@ -178,17 +196,6 @@ class _HomeState extends State<Home> {
           ),
         )
         .toList());
-
-    list.add(Divider());
-
-    list.add(
-      ListTile(
-        leading: Icon(Icons.settings),
-        title: Text('Configurações do App'),
-        onTap: () =>
-            Navigator.of(context).popAndPushNamed(Configuracoes.routeName),
-      ),
-    );
 
     return list;
   }
@@ -201,5 +208,22 @@ class _HomeState extends State<Home> {
     if (await canLaunch(url)) {
       await launch(url);
     }
+  }
+
+  ///
+  ///
+  ///
+  Future<RemoteConfig> setupRemoteConfig() async {
+    final RemoteConfig remoteConfig = await RemoteConfig.instance;
+    remoteConfig.setConfigSettings(RemoteConfigSettings(debugMode: false));
+    remoteConfig.setDefaults(<String, dynamic>{
+      'links': '{"links":['
+          '{"label":"Marinha do Brasil","url":"https://www.marinha.mil.br/"}'
+          ']}',
+      'show_uuid': false,
+    });
+    await remoteConfig.fetch(expiration: const Duration(minutes: 1));
+    await remoteConfig.activateFetched();
+    return remoteConfig;
   }
 }

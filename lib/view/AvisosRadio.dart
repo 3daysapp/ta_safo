@@ -3,8 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:ta_safo/util/Geo.dart';
+import 'package:ta_safo/util/MetricHttpClient.dart';
 import 'package:ta_safo/util/VisualUtil.dart';
 import 'package:ta_safo/view/AvisosRadioMapa.dart';
 
@@ -207,12 +208,11 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   Future<Map<String, dynamic>> _getData() async {
-    var client = new http.Client();
+    MetricHttpClient client = MetricHttpClient(Client());
 
     Map data = {};
 
-    http.Response response =
-        await client.get(_url).timeout(Duration(seconds: 10));
+    Response response = await client.get(_url).timeout(Duration(seconds: 10));
 
     if (response.statusCode != 200) {
       throw Exception("$_url - Status Code: ${response.statusCode}");
