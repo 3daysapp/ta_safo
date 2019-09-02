@@ -231,8 +231,16 @@ class _DownloadTileState extends State<DownloadTile> {
   ///
   ///
   Future<String> _createFileOfUrl() async {
-    var request = await HttpClient().getUrl(Uri.parse(widget.url));
-    var response = await request.close();
+    HttpClientRequest request =
+        await HttpClient().getUrl(Uri.parse(widget.url));
+    HttpClientResponse response = await request.close();
+
+    if (response.statusCode < 200 || response.statusCode > 299) {
+      _streamController
+          .addError('Response status code: ${response.statusCode}');
+      return null;
+    }
+
     var bytes = await consolidateHttpClientResponseBytes(
       response,
       onBytesReceived: (int received, int length) {
