@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
-import 'package:ta_safo/util/Geo.dart';
-import 'package:ta_safo/util/MetricHttpClient.dart';
-import 'package:ta_safo/util/VisualUtil.dart';
-import 'package:ta_safo/view/AvisosRadioMapa.dart';
+import 'package:ta_safo/util/geo.dart';
+import 'package:ta_safo/util/metric_http_client.dart';
+import 'package:ta_safo/util/visual_util.dart';
+import 'package:ta_safo/view/avisos_radio_mapa.dart';
 
 ///
 ///
@@ -29,6 +29,9 @@ enum TipoAviso {
 class AvisosRadio extends StatefulWidget {
   static const String routeName = '/avisos_radio';
 
+  ///
+  ///
+  ///
   @override
   _AvisosRadioState createState() => _AvisosRadioState();
 }
@@ -37,10 +40,10 @@ class AvisosRadio extends StatefulWidget {
 ///
 ///
 class _AvisosRadioState extends State<AvisosRadio> {
-  StreamController _streamController;
-  String _url = 'https://www.marinha.mil.br/chm/sites/'
+  final String _url = 'https://www.marinha.mil.br/chm/sites/'
       'www.marinha.mil.br.chm/files/opt/avradio.json';
 
+  StreamController _streamController;
   TipoAviso _filtroTipo = TipoAviso.todos;
 
   ///
@@ -48,7 +51,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   @override
   void initState() {
-    _streamController = new StreamController();
+    _streamController = StreamController();
     _loadData();
     super.initState();
   }
@@ -193,9 +196,9 @@ class _AvisosRadioState extends State<AvisosRadio> {
   ///
   ///
   ///
-  _loadData() async {
+  void _loadData() async {
     _streamController.add(null);
-    _getData().then((map) {
+    await _getData().then((map) {
       _streamController.add(map);
     }).catchError((error) {
       print(error);
@@ -215,7 +218,7 @@ class _AvisosRadioState extends State<AvisosRadio> {
     Response response = await client.get(_url).timeout(Duration(seconds: 10));
 
     if (response.statusCode != 200) {
-      throw Exception("$_url - Status Code: ${response.statusCode}");
+      throw Exception('$_url - Status Code: ${response.statusCode}');
     }
 
     // TODO: User cloud storage para cache.

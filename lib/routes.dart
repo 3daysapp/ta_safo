@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:ta_safo/view/AvisosMauTempo.dart';
-import 'package:ta_safo/view/AvisosNavegantes.dart';
-import 'package:ta_safo/view/AvisosRadio.dart';
-import 'package:ta_safo/view/AvisosRadioMapa.dart';
-import 'package:ta_safo/view/Configuracoes.dart';
-import 'package:ta_safo/view/Home.dart';
-import 'package:ta_safo/view/ListagemPdf.dart';
+import 'package:ta_safo/view/avisos_mau_tempo.dart';
+import 'package:ta_safo/view/avisos_navegantes.dart';
+import 'package:ta_safo/view/avisos_radio.dart';
+import 'package:ta_safo/view/avisos_radio_mapa.dart';
+import 'package:ta_safo/view/configuracoes.dart';
+import 'package:ta_safo/view/home.dart';
+import 'package:ta_safo/view/listagem_pdf.dart';
 
+///
+///
+///
 class Routes {
   static Map<String, WidgetBuilder> build(BuildContext context) {
     return {

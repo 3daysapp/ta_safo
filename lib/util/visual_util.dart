@@ -13,7 +13,7 @@ class NoInfo extends StatelessWidget {
     return Center(
       child: Text(
         'Não foi possível obter as informações.',
-        style: Theme.of(context).textTheme.body2,
+        style: Theme.of(context).textTheme.bodyText1,
       ),
     );
   }
@@ -44,7 +44,7 @@ class TryAgain extends StatelessWidget {
         children: <Widget>[
           Text(
             'Não foi possível obter as informações.',
-            style: Theme.of(context).textTheme.body2,
+            style: Theme.of(context).textTheme.bodyText1,
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

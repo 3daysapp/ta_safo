@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,7 @@ class _DownloadTileState extends State<DownloadTile> {
     if (file.existsSync()) {
       _path = file.path;
       _streamController.add(1.0);
-      _streamController.close();
+      await _streamController.close();
     }
   }
 
@@ -125,7 +126,7 @@ class _DownloadTileState extends State<DownloadTile> {
             PopupMenuDivider(),
             _getPopupItem(
               PopupOperation.delete_file,
-              'Excluir Download',
+              'Excluir Arquivo',
               Icons.delete,
             ),
           ];
@@ -241,7 +242,7 @@ class _DownloadTileState extends State<DownloadTile> {
       return null;
     }
 
-    var bytes = await consolidateHttpClientResponseBytes(
+    Uint8List bytes = await consolidateHttpClientResponseBytes(
       response,
       onBytesReceived: (int received, int length) {
         int total = length ?? 10000000;

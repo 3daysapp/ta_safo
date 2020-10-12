@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-import 'package:ta_safo/secrets.dart';
 
 ///
 ///
@@ -9,6 +8,9 @@ import 'package:ta_safo/secrets.dart';
 class AvisosRadioMapa extends StatefulWidget {
   static const String routeName = '/avisos_radio_mapa';
 
+  ///
+  ///
+  ///
   @override
   _AvisosRadioMapaState createState() => _AvisosRadioMapaState();
 }
@@ -120,21 +122,19 @@ class _AvisosRadioMapaState extends State<AvisosRadioMapa> {
 
     List<LayerOptions> layers = [];
 
-    layers.add(TileLayerOptions(
-      urlTemplate: "https://api.tiles.mapbox.com/v4/"
-          "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
-      additionalOptions: {
-        'accessToken': Secrets.mapboxToken,
-        'id': 'mapbox.streets',
-      },
-    ));
+    // layers.add(TileLayerOptions(
+    //   urlTemplate: 'https://api.tiles.mapbox.com/v4/'
+    //       '{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}',
+    //   additionalOptions: {
+    //     'accessToken': Secrets.mapboxToken,
+    //     'id': 'mapbox.streets',
+    //   },
+    // ));
 
-//    layers.add(
-//      TileLayerOptions(
-//        urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-//        subdomains: ['a', 'b', 'c'],
-//      ),
-//    );
+    layers.add(TileLayerOptions(
+      urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      subdomains: ['a', 'b', 'c'],
+    ));
 
     if (polygons.isNotEmpty) {
       layers.add(

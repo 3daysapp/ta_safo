@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter_udid/flutter_udid.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:ta_safo/util/Config.dart';
+import 'package:ta_safo/util/config.dart';
 
 ///
 ///
@@ -12,6 +12,9 @@ import 'package:ta_safo/util/Config.dart';
 class Configuracoes extends StatefulWidget {
   static const String routeName = '/configuracoes';
 
+  ///
+  ///
+  ///
   @override
   _ConfiguracoesState createState() => _ConfiguracoesState();
 }
@@ -20,8 +23,6 @@ class Configuracoes extends StatefulWidget {
 ///
 ///
 class _ConfiguracoesState extends State<Configuracoes> {
-  Config config = Config();
-
   ///
   ///
   ///
@@ -33,7 +34,7 @@ class _ConfiguracoesState extends State<Configuracoes> {
       ),
       body: Builder(
         builder: (context) => ListView(
-          children: _getItens(),
+          children: _getItens(context),
         ),
       ),
     );
@@ -42,7 +43,7 @@ class _ConfiguracoesState extends State<Configuracoes> {
   ///
   ///
   ///
-  List<Widget> _getItens() {
+  List<Widget> _getItens(BuildContext context) {
     List<Widget> lista = [];
 
     lista.add(Divider());
@@ -73,9 +74,9 @@ class _ConfiguracoesState extends State<Configuracoes> {
       },
     ));
 
-    lista.add(Divider());
+    if (Config().debug) {
+      lista.add(Divider());
 
-    if (config.remoteConfig.getBool('show_uuid') ?? false) {
       lista.add(StreamBuilder<String>(
         stream: FlutterUdid.consistentUdid.asStream(),
         builder: (context, snapshot) {
@@ -91,8 +92,6 @@ class _ConfiguracoesState extends State<Configuracoes> {
           );
         },
       ));
-
-      lista.add(Divider());
     }
 
     return lista;
@@ -110,12 +109,13 @@ class _ConfiguracoesState extends State<Configuracoes> {
     );
 
     int count = 0;
-    fses.forEach((fse) {
+
+    for (FileSystemEntity fse in fses) {
       if (fse.statSync().type == FileSystemEntityType.file) {
         fse.deleteSync();
         count++;
       }
-    });
+    }
 
     Scaffold.of(context).showSnackBar(
       SnackBar(

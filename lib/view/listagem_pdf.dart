@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
-import 'package:ta_safo/util/MetricHttpClient.dart';
-import 'package:ta_safo/util/VisualUtil.dart';
-import 'package:ta_safo/view/TelaPdf.dart';
-import 'package:ta_safo/widget/DownloadTile.dart';
+import 'package:ta_safo/util/metric_http_client.dart';
+import 'package:ta_safo/util/visual_util.dart';
+import 'package:ta_safo/view/tela_pdf.dart';
+import 'package:ta_safo/widget/download_tile.dart';
 
 ///
 ///
@@ -24,7 +24,7 @@ class _ListagemPdfState extends State<ListagemPdf> {
   StreamController _streamController;
   String _url;
 
-  static const String noFilter = "TODOS";
+  static const String noFilter = 'TODOS';
   String _filtroAno = noFilter;
   List<String> _anos;
 
@@ -118,7 +118,7 @@ class _ListagemPdfState extends State<ListagemPdf> {
                     DownloadTile(
                       url: url,
                       localFilename: filename,
-                      title: "$ano - $folheto",
+                      title: '$ano - $folheto',
                       subtitle: subtitle,
                       tapCallback: _showPdf,
                     ),
@@ -131,7 +131,7 @@ class _ListagemPdfState extends State<ListagemPdf> {
               return Center(
                 child: Text(
                   'Nenhuma informação encontrada.',
-                  style: Theme.of(context).textTheme.body2,
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
               );
             }
@@ -147,7 +147,7 @@ class _ListagemPdfState extends State<ListagemPdf> {
                 now.month.toString().padLeft(2, '0') +
                 '/' +
                 now.year.toString() +
-                " " +
+                ' ' +
                 now.hour.toString().padLeft(2, '0') +
                 ':' +
                 now.minute.toString().padLeft(2, '0');
@@ -202,7 +202,7 @@ class _ListagemPdfState extends State<ListagemPdf> {
   ///
   void _loadData() async {
     _streamController.add(null);
-    _getData().then((data) {
+    await _getData().then((data) {
       _streamController.add(data);
     }).catchError((error) {
       print(error);
@@ -217,12 +217,12 @@ class _ListagemPdfState extends State<ListagemPdf> {
   Future<String> _getData() async {
     MetricHttpClient client = MetricHttpClient(Client());
 
-    String data = "";
+    String data = '';
 
     Response response = await client.get(_url).timeout(Duration(seconds: 10));
 
     if (response.statusCode != 200) {
-      throw Exception("$_url - Status Code: ${response.statusCode}");
+      throw Exception('$_url - Status Code: ${response.statusCode}');
     }
 
     // TODO: Armazenar informações caso fique offline?

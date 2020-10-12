@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
-import 'package:ta_safo/util/MauTempo.dart';
-import 'package:ta_safo/util/MetricHttpClient.dart';
+import 'package:ta_safo/util/mau_tempo.dart';
+import 'package:ta_safo/util/metric_http_client.dart';
 
 ///
 ///
@@ -21,10 +21,10 @@ class AvisosMauTempo extends StatefulWidget {
 ///
 class _AvisosMauTempoState extends State<AvisosMauTempo> {
   StreamController<String> _streamController;
-  String _url = 'https://www.marinha.mil.br/chm/'
+  final String _url = 'https://www.marinha.mil.br/chm/'
       'dados-do-smm-avisos-de-mau-tempo/avisos-de-mau-tempo';
 
-  static const String noFilter = "TODAS";
+  static const String noFilter = 'TODAS';
   String _filtroArea = noFilter;
   List<String> _areas;
 
@@ -131,7 +131,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
                 now.month.toString().padLeft(2, '0') +
                 '/' +
                 now.year.toString() +
-                " " +
+                ' ' +
                 now.hour.toString().padLeft(2, '0') +
                 ':' +
                 now.minute.toString().padLeft(2, '0');
@@ -167,7 +167,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
             return Center(
               child: Text(
                 'Não foi possível obter as informações.',
-                style: Theme.of(context).textTheme.body2,
+                style: Theme.of(context).textTheme.bodyText1,
               ),
             );
           }
@@ -186,12 +186,12 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
   Future<String> _getData() async {
     MetricHttpClient client = MetricHttpClient(Client());
 
-    String data = "";
+    String data = '';
 
     Response response = await client.get(_url).timeout(Duration(seconds: 10));
 
     if (response.statusCode != 200) {
-      throw Exception("$_url - Status Code: ${response.statusCode}");
+      throw Exception('$_url - Status Code: ${response.statusCode}');
     }
 
     // TODO: Armazenar informações caso fique offline.
@@ -208,7 +208,7 @@ class _AvisosMauTempoState extends State<AvisosMauTempo> {
   ///
   void _loadData() async {
     _streamController.add(null);
-    _getData().then((data) {
+    await _getData().then((data) {
       _streamController.add(data);
     }).catchError((error) {
       print(error);
